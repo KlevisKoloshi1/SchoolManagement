@@ -1,0 +1,59 @@
+# =====================
+# OS FILES
+# =====================
+.DS_Store
+Thumbs.db
+
+# =====================
+# ENV FILES (SECRETS)
+# =====================
+.env
+.env.*
+
+# =====================
+# NODE / REACT
+# =====================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# =====================
+# LARAVEL / PHP
+# =====================
+/backend/vendor/
+/backend/storage/*.key
+/backend/storage/framework/cache/*
+/backend/storage/framework/sessions/*
+/backend/storage/framework/views/*
+/backend/bootstrap/cache/
+
+# =====================
+# DATABASE
+# =====================
+*.sqlite
+
+# =====================
+# IDE / EDITOR
+# =====================
+.vscode/
+.cursor/
+.idea/
+
+# =====================
+# BUILD OUTPUTS
+# =====================
+/frontend/dist/
+/frontend/build/
+
+# =====================
+# ELECTRON
+# =====================
+*.exe
+*.AppImage
+*.dmg
+
+# =====================
+# LOGS
+# =====================
+*.log

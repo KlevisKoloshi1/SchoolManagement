@@ -10,13 +10,16 @@ return new class extends Migration
     {
         Schema::create('grades', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete()->index();
-            $table->foreignId('subject_id')->constrained('subjects')->restrictOnDelete()->index();
-            $table->foreignId('teacher_id')->constrained('teachers')->restrictOnDelete()->index();
+            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
+            $table->foreignId('subject_id')->constrained('subjects')->restrictOnDelete();
+            $table->foreignId('teacher_id')->constrained('teachers')->restrictOnDelete();
             $table->unsignedSmallInteger('grade');
             $table->date('date')->index();
             $table->timestamps();
 
+            $table->index('student_id');
+            $table->index('subject_id');
+            $table->index('teacher_id');
             $table->index(['student_id', 'subject_id', 'date']);
         });
     }

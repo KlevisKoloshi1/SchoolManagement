@@ -23,7 +23,7 @@
   },
   "auth": {
     "welcomeBack": "Welcome Back",
-    "signInDescription": "Sign in to your School Management account",
+    "signInDescription": "Sign in to your E-School account",
     "emailOrUsername": "Email or Username",
     "enterEmailOrUsername": "Enter your email or username",
     "enterPassword": "Enter your password",

@@ -15,6 +15,14 @@ class AdminTeacherService
     {
     }
 
+    public function getAllTeachers()
+    {
+        return Teacher::query()
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
     /**
      * @return array{teacher: Teacher, username: string, password: string}
      */
@@ -48,6 +56,20 @@ class AdminTeacherService
                 'username' => $username,
                 'password' => $passwordPlain,
             ];
+        });
+    }
+
+    public function deleteTeacher(int $teacherId): void
+    {
+        DB::transaction(function () use ($teacherId) {
+            $teacher = Teacher::query()->findOrFail($teacherId);
+            $user = $teacher->user;
+            
+            // Delete the teacher record first
+            $teacher->delete();
+            
+            // Then delete the associated user
+            $user->delete();
         });
     }
 }

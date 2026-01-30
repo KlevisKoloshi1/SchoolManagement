@@ -21,7 +21,9 @@ Route::middleware('throttle:api')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
 
         Route::prefix('admin')->middleware('role:admin')->group(function () {
+            Route::get('/teachers', [AdminTeacherController::class, 'index']);
             Route::post('/teachers', [AdminTeacherController::class, 'store']);
+            Route::delete('/teachers/{id}', [AdminTeacherController::class, 'destroy']);
             Route::post('/assign-class', [AssignmentController::class, 'assignClass']);
             Route::post('/assign-subject', [AssignmentController::class, 'assignSubject']);
         });

@@ -12,6 +12,28 @@ class AdminTeacherController extends Controller
     {
     }
 
+    public function index()
+    {
+        $teachers = $this->adminTeacherService->getAllTeachers();
+
+        return response()->json([
+            'teachers' => $teachers->map(function ($teacher) {
+                return [
+                    'id' => $teacher->id,
+                    'user' => [
+                        'id' => $teacher->user->id,
+                        'name' => $teacher->user->name,
+                        'email' => $teacher->user->email,
+                        'username' => $teacher->user->username,
+                        'role' => $teacher->user->role,
+                    ],
+                    'is_main_teacher' => $teacher->is_main_teacher,
+                    'created_at' => $teacher->created_at,
+                ];
+            }),
+        ]);
+    }
+
     public function store(StoreTeacherRequest $request)
     {
         $result = $this->adminTeacherService->createTeacher(
@@ -39,6 +61,15 @@ class AdminTeacherController extends Controller
                 'password' => $result['password'],
             ],
         ], 201);
+    }
+
+    public function destroy($id)
+    {
+        $this->adminTeacherService->deleteTeacher($id);
+
+        return response()->json([
+            'message' => 'Teacher deleted successfully.',
+        ]);
     }
 }
 

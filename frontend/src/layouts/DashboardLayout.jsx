@@ -29,12 +29,11 @@ export default function DashboardLayout() {
     <div className="h-full">
       <div className="flex h-full">
         <aside className="w-64 border-r border-slate-200 bg-white">
-          <div className="flex items-center justify-between px-4 py-4">
+          <div className="flex items-center px-4 py-4">
             <div>
               <div className="text-sm font-semibold text-slate-900">{t('school.schoolManagement')}</div>
               <div className="text-xs text-slate-500">{t('common.role')}: {role || '—'}</div>
             </div>
-            <LanguageSwitcher compact />
           </div>
 
           <div className="px-2">
@@ -64,7 +63,12 @@ export default function DashboardLayout() {
           </div>
         </aside>
 
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto relative">
+          {/* Language Switcher positioned at top right */}
+          <div className="absolute top-4 right-6 z-10">
+            <LanguageSwitcher compact />
+          </div>
+          
           <div className="mx-auto max-w-6xl p-6">
             <Outlet />
           </div>

@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Enums\UserRole;
+use App\Models\SchoolClass;
+use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -18,17 +20,74 @@ class AdminTeacherService
     public function getAllTeachers()
     {
         return Teacher::query()
-            ->with('user')
+            ->with(['user', 'homeroomClass', 'subjects'])
             ->orderBy('created_at', 'desc')
             ->get();
     }
 
     /**
+     * Get class details for a main teacher: class, students (with user), grades, absences.
+     */
+    public function getMainTeacherClassDetails(int $teacherId): array
+    {
+        $teacher = Teacher::query()
+            ->with(['user', 'homeroomClass.students.user', 'homeroomClass.students.grades', 'homeroomClass.students.absences', 'subjects'])
+            ->findOrFail($teacherId);
+
+        if (! $teacher->is_main_teacher || ! $teacher->homeroomClass) {
+            abort(404, 'Main teacher or class not found.');
+        }
+
+        $class = $teacher->homeroomClass;
+        $students = $class->students->map(function ($student) {
+            return [
+                'id' => $student->id,
+                'user' => [
+                    'id' => $student->user->id,
+                    'name' => $student->user->name,
+                    'email' => $student->user->email,
+                    'username' => $student->user->username,
+                ],
+                'grades' => $student->grades->map(fn ($g) => [
+                    'id' => $g->id,
+                    'subject_id' => $g->subject_id,
+                    'grade' => $g->grade,
+                    'date' => $g->date?->toDateString(),
+                ]),
+                'absences' => $student->absences->map(fn ($a) => [
+                    'id' => $a->id,
+                    'subject_id' => $a->subject_id,
+                    'date' => $a->date?->toDateString(),
+                    'justified' => $a->justified,
+                ]),
+            ];
+        });
+
+        return [
+            'teacher' => [
+                'id' => $teacher->id,
+                'user' => [
+                    'id' => $teacher->user->id,
+                    'name' => $teacher->user->name,
+                    'email' => $teacher->user->email,
+                    'username' => $teacher->user->username,
+                ],
+                'subjects' => $teacher->subjects->map(fn ($s) => ['id' => $s->id, 'name' => $s->name]),
+            ],
+            'class' => [
+                'id' => $class->id,
+                'name' => $class->name,
+            ],
+            'students' => $students,
+        ];
+    }
+
+    /**
      * @return array{teacher: Teacher, username: string, password: string}
      */
-    public function createTeacher(string $name, ?string $email, bool $isMainTeacher): array
+    public function createTeacher(string $name, ?string $email, bool $isMainTeacher, ?int $classId = null, ?int $subjectId = null): array
     {
-        return DB::transaction(function () use ($name, $email, $isMainTeacher) {
+        return DB::transaction(function () use ($name, $email, $isMainTeacher, $classId, $subjectId) {
             $username = $this->credentialService->generateUsername($name);
             $passwordPlain = $this->credentialService->generatePassword();
 
@@ -51,8 +110,27 @@ class AdminTeacherService
                 'is_main_teacher' => $isMainTeacher,
             ]);
 
+            if ($isMainTeacher && $classId !== null) {
+                $class = SchoolClass::query()->findOrFail($classId);
+                if (SchoolClass::query()->where('main_teacher_id', $teacher->id)->exists()) {
+                    // Should not happen on create
+                }
+                if ($class->main_teacher_id !== null) {
+                    throw ValidationException::withMessages([
+                        'class_id' => ['This class already has a main teacher assigned.'],
+                    ]);
+                }
+                $class->main_teacher_id = $teacher->id;
+                $class->save();
+            }
+
+            if ($isMainTeacher && $subjectId !== null) {
+                Subject::query()->findOrFail($subjectId);
+                $teacher->subjects()->syncWithoutDetaching([$subjectId]);
+            }
+
             return [
-                'teacher' => $teacher->load('user'),
+                'teacher' => $teacher->load(['user', 'homeroomClass', 'subjects']),
                 'username' => $username,
                 'password' => $passwordPlain,
             ];

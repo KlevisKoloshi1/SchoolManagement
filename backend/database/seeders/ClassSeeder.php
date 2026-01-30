@@ -9,7 +9,7 @@ class ClassSeeder extends Seeder
 {
     public function run(): void
     {
-        $classes = ['10a', '10b', '11a', '11b', '12a', '12b', '13a', '13b'];
+        $classes = ['10A', '10B', '11A', '11B', '12A', '12B', '13A', '13B'];
 
         foreach ($classes as $name) {
             SchoolClass::query()->updateOrCreate(['name' => $name]);

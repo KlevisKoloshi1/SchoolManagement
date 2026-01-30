@@ -10,6 +10,7 @@ import NotFoundPage from '../pages/NotFoundPage'
 
 import AdminDashboard from '../pages/admin/AdminDashboard'
 import AdminTeachers from '../pages/admin/AdminTeachers'
+import AdminMainTeacherClassDetails from '../pages/admin/AdminMainTeacherClassDetails'
 
 import MainTeacherDashboard from '../pages/mainTeacher/MainTeacherDashboard'
 import MainTeacherStudents from '../pages/mainTeacher/MainTeacherStudents'
@@ -47,6 +48,7 @@ export function makeRouter() {
           children: [
             { path: '/admin/dashboard', element: <AdminDashboard /> },
             { path: '/admin/teachers', element: <AdminTeachers /> },
+            { path: '/admin/teachers/:teacherId/class-details', element: <AdminMainTeacherClassDetails /> },
           ],
         },
       ],

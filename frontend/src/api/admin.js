@@ -5,12 +5,28 @@ export async function getTeachers() {
   return data
 }
 
-export async function createTeacher({ name, email, is_main_teacher }) {
-  const { data } = await apiClient.post('/admin/teachers', {
-    name,
-    email,
-    is_main_teacher,
-  })
+export async function getClasses() {
+  const { data } = await apiClient.get('/admin/classes')
+  return data
+}
+
+export async function getSubjects() {
+  const { data } = await apiClient.get('/admin/subjects')
+  return data
+}
+
+export async function getMainTeacherClassDetails(teacherId) {
+  const { data } = await apiClient.get(`/admin/teachers/${teacherId}/class-details`)
+  return data
+}
+
+export async function createTeacher({ name, email, is_main_teacher, class_id, subject_id }) {
+  const body = { name, email, is_main_teacher }
+  if (is_main_teacher) {
+    body.class_id = class_id
+    body.subject_id = subject_id
+  }
+  const { data } = await apiClient.post('/admin/teachers', body)
   return data
 }
 

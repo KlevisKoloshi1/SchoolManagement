@@ -58,5 +58,24 @@
   "school": {
     "schoolManagement": "Menaxhimi i Shkollës",
     "schoolManagementSystem": "Sistemi i Menaxhimit të Shkollës"
+  },
+  "subjects": {
+    "Mathematics": "Matematikë",
+    "History": "Histori",
+    "Geography": "Gjeografi",
+    "Chemistry": "Kimi",
+    "Technical Informatics": "Informatikë Teknike",
+    "Programming": "Programim",
+    "Networks": "Rrjeta",
+    "Albanian Language": "Gjuhë shqipe",
+    "English": "Anglisht",
+    "German": "Gjermanisht",
+    "Physical Education": "Fiskulturë",
+    "Databases": "Databazë",
+    "System Planning": "Planifikim Sistemi",
+    "Biology": "Biologji",
+    "Economics": "Ekonomi",
+    "Physics": "Fizikë",
+    "Career Counseling": "Këshillim Karriere"
   }
 }

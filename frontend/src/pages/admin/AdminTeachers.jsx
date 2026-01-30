@@ -1,26 +1,40 @@
 import { useState, useEffect } from 'react'
-import { createTeacher, getTeachers, deleteTeacher } from '../../api/admin'
+import { Link } from 'react-router-dom'
+import { createTeacher, getTeachers, deleteTeacher, getClasses, getSubjects } from '../../api/admin'
 import { Alert, Button, Card, Input } from '../../components/ui'
 
 export default function AdminTeachers() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [isMainTeacher, setIsMainTeacher] = useState(false)
+  const [classId, setClassId] = useState('')
+  const [subjectId, setSubjectId] = useState('')
+
+  const [classes, setClasses] = useState([])
+  const [subjects, setSubjects] = useState([])
 
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [created, setCreated] = useState(null)
 
-  // Teachers list state
   const [teachers, setTeachers] = useState([])
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState(null)
   const [deletingTeacherId, setDeletingTeacherId] = useState(null)
 
-  // Fetch teachers on component mount
   useEffect(() => {
     fetchTeachers()
   }, [])
+
+  useEffect(() => {
+    if (isMainTeacher) {
+      getClasses().then((d) => setClasses(d.classes || [])).catch(() => setClasses([]))
+      getSubjects().then((d) => setSubjects(d.subjects || [])).catch(() => setSubjects([]))
+    } else {
+      setClassId('')
+      setSubjectId('')
+    }
+  }, [isMainTeacher])
 
   async function fetchTeachers() {
     try {
@@ -42,19 +56,25 @@ export default function AdminTeachers() {
 
     if (!name.trim()) return setError('Name is required.')
     if (!email.trim()) return setError('Email is required.')
+    if (isMainTeacher) {
+      if (!classId) return setError('Class is required for main teacher.')
+      if (!subjectId) return setError('Subject is required for main teacher.')
+    }
 
     setSubmitting(true)
     try {
-      const data = await createTeacher({
-        name,
-        email,
-        is_main_teacher: isMainTeacher,
-      })
+      const payload = { name, email, is_main_teacher: isMainTeacher }
+      if (isMainTeacher) {
+        payload.class_id = Number(classId)
+        payload.subject_id = Number(subjectId)
+      }
+      const data = await createTeacher(payload)
       setCreated(data)
       setName('')
       setEmail('')
       setIsMainTeacher(false)
-      // Refresh the teachers list
+      setClassId('')
+      setSubjectId('')
       await fetchTeachers()
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to create teacher.')
@@ -67,11 +87,9 @@ export default function AdminTeachers() {
     if (!confirm(`Are you sure you want to delete teacher "${teacherName}"? This action cannot be undone.`)) {
       return
     }
-
     setDeletingTeacherId(teacherId)
     try {
       await deleteTeacher(teacherId)
-      // Refresh the teachers list
       await fetchTeachers()
     } catch (err) {
       setFetchError(err?.response?.data?.message || 'Failed to delete teacher.')
@@ -84,7 +102,7 @@ export default function AdminTeachers() {
     <div className="space-y-6">
       <div>
         <div className="text-2xl font-semibold text-slate-900">Teachers</div>
-        <div className="text-sm text-slate-600">Create teachers and show one-time credentials.</div>
+        <div className="text-sm text-slate-600">Create main teachers (with class and subject) or regular teachers.</div>
       </div>
 
       <Card title="Add Teacher">
@@ -107,6 +125,41 @@ export default function AdminTeachers() {
             />
             Create as main teacher
           </label>
+
+          {isMainTeacher && (
+            <>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium text-slate-700">Class</label>
+                <select
+                  value={classId}
+                  onChange={(e) => setClassId(e.target.value)}
+                  className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                >
+                  <option value="">Select class</option>
+                  {classes.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium text-slate-700">Subject (for main class)</label>
+                <select
+                  value={subjectId}
+                  onChange={(e) => setSubjectId(e.target.value)}
+                  className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                >
+                  <option value="">Select subject</option>
+                  {subjects.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
 
           <div className="md:col-span-2">
             <Button type="submit" disabled={submitting}>
@@ -157,30 +210,38 @@ export default function AdminTeachers() {
                 className="flex items-center justify-between p-4 border border-slate-200 rounded-lg bg-slate-50"
               >
                 <div className="flex-1">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <div>
                       <div className="font-medium text-slate-900">{teacher.user.name}</div>
                       <div className="text-sm text-slate-600">{teacher.user.email}</div>
-                      <div className="text-xs text-slate-500">
-                        Username: {teacher.user.username}
-                      </div>
+                      <div className="text-xs text-slate-500">Username: {teacher.user.username}</div>
                     </div>
                     {teacher.is_main_teacher && (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         Main Teacher
                       </span>
                     )}
+                    {teacher.class && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                        Class: {teacher.class.name}
+                      </span>
+                    )}
+                    {teacher.subjects?.length > 0 && (
+                      <span className="text-xs text-slate-600">
+                        Subject(s): {teacher.subjects.map((s) => s.name).join(', ')}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="text-right">
-                    <div className="text-xs text-slate-500">
-                      Created: {new Date(teacher.created_at).toLocaleDateString()}
-                    </div>
-                    <div className="text-xs text-slate-400">
-                      Role: {teacher.user.role}
-                    </div>
-                  </div>
+                  {teacher.is_main_teacher && teacher.class && (
+                    <Link
+                      to={`/admin/teachers/${teacher.id}/class-details`}
+                      className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                      View class
+                    </Link>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"
@@ -206,4 +267,3 @@ export default function AdminTeachers() {
     </div>
   )
 }
-

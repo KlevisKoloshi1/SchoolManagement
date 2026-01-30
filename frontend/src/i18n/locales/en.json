@@ -58,5 +58,24 @@
   "school": {
     "schoolManagement": "School Management",
     "schoolManagementSystem": "School Management System"
+  },
+  "subjects": {
+    "Mathematics": "Mathematics",
+    "History": "History",
+    "Geography": "Geography",
+    "Chemistry": "Chemistry",
+    "Technical Informatics": "Technical Informatics",
+    "Programming": "Programming",
+    "Networks": "Networks",
+    "Albanian Language": "Albanian Language",
+    "English": "English",
+    "German": "German",
+    "Physical Education": "Physical Education",
+    "Databases": "Databases",
+    "System Planning": "System Planning",
+    "Biology": "Biology",
+    "Economics": "Economics",
+    "Physics": "Physics",
+    "Career Counseling": "Career Counseling"
   }
 }

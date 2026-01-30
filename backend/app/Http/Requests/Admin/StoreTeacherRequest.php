@@ -13,11 +13,20 @@ class StoreTeacherRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'is_main_teacher' => ['required', 'boolean'],
+            'class_id' => ['nullable', 'integer', 'exists:classes,id'],
+            'subject_id' => ['nullable', 'integer', 'exists:subjects,id'],
         ];
+
+        if ($this->boolean('is_main_teacher')) {
+            $rules['class_id'] = ['required', 'integer', 'exists:classes,id'];
+            $rules['subject_id'] = ['required', 'integer', 'exists:subjects,id'];
+        }
+
+        return $rules;
     }
 }
 

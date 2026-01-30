@@ -27,11 +27,8 @@ class LessonTopicService
             ]);
         }
 
-        if ($teacher->is_main_teacher && $teacher->homeroomClass && $teacher->homeroomClass->id !== $classId) {
-            throw ValidationException::withMessages([
-                'class_id' => ['Main teacher can only add lesson topics for their own class.'],
-            ]);
-        }
+        // Main teacher may teach homeroom (any subject they have) or other classes (as normal teacher).
+        // No extra restriction: if they have the subject and class_id is valid, allow.
 
         return DB::transaction(function () use ($teacher, $subjectId, $classId, $title, $description, $date) {
             return LessonTopic::query()->create([

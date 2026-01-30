@@ -1,40 +1,51 @@
-import { useState } from 'react'
-import { addLessonTopic } from '../../api/mainTeacher'
+import { useState, useEffect } from 'react'
+import { getSubjects, getClasses, addLessonTopic } from '../../api/mainTeacher'
 import { Alert, Button, Card, Input } from '../../components/ui'
 
 export default function MainTeacherLessons() {
+  const [subjects, setSubjects] = useState([])
+  const [classes, setClasses] = useState([])
   const [subjectId, setSubjectId] = useState('')
   const [classId, setClassId] = useState('')
-  const [topic, setTopic] = useState('')
-  const [taughtOn, setTaughtOn] = useState('')
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [date, setDate] = useState('')
 
+  const [loadingCatalog, setLoadingCatalog] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
+
+  useEffect(() => {
+    Promise.all([getSubjects(), getClasses()])
+      .then(([subj, cls]) => {
+        setSubjects(subj.subjects || [])
+        setClasses(cls.classes || [])
+      })
+      .catch(() => {})
+      .finally(() => setLoadingCatalog(false))
+  }, [])
 
   async function onSubmit(e) {
     e.preventDefault()
     setError(null)
     setSuccess(null)
-
-    if (!subjectId.trim()) return setError('Subject ID is required.')
-    if (!classId.trim()) return setError('Class ID is required.')
-    if (!topic.trim()) return setError('Topic is required.')
-    if (!taughtOn.trim()) return setError('Date is required.')
+    if (!subjectId) return setError('Subject is required.')
+    if (!title.trim()) return setError('Topic title is required.')
+    if (!date.trim()) return setError('Date is required.')
 
     setSubmitting(true)
     try {
-      const data = await addLessonTopic({
-        subject_id: Number(subjectId),
-        class_id: Number(classId),
-        topic,
-        taught_on: taughtOn,
-      })
-      setSuccess(data?.message || 'Lesson topic added.')
+      const payload = { subject_id: Number(subjectId), title, date }
+      if (description.trim()) payload.description = description.trim()
+      if (classId) payload.class_id = Number(classId)
+      await addLessonTopic(payload)
+      setSuccess('Lesson topic added.')
       setSubjectId('')
       setClassId('')
-      setTopic('')
-      setTaughtOn('')
+      setTitle('')
+      setDescription('')
+      setDate('')
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to add lesson topic.')
     } finally {
@@ -46,7 +57,9 @@ export default function MainTeacherLessons() {
     <div className="space-y-6">
       <div>
         <div className="text-2xl font-semibold text-slate-900">Lessons</div>
-        <div className="text-sm text-slate-600">Add lesson topics for your class.</div>
+        <div className="text-sm text-slate-600">
+          Add lesson topics. For your main class, only select subject. For another class, also select class.
+        </div>
       </div>
 
       <Card title="Add Lesson Topic">
@@ -62,14 +75,55 @@ export default function MainTeacherLessons() {
             </div>
           ) : null}
 
-          <Input label="Subject ID" value={subjectId} onChange={(e) => setSubjectId(e.target.value)} />
-          <Input label="Class ID" value={classId} onChange={(e) => setClassId(e.target.value)} />
           <div className="md:col-span-2">
-            <Input label="Topic" value={topic} onChange={(e) => setTopic(e.target.value)} />
+            <label className="mb-1 block text-sm font-medium text-slate-700">Subject</label>
+            <select
+              value={subjectId}
+              onChange={(e) => setSubjectId(e.target.value)}
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              required
+            >
+              <option value="">Select subject</option>
+              {subjects.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
           </div>
-          <Input label="Taught on" type="date" value={taughtOn} onChange={(e) => setTaughtOn(e.target.value)} />
+
           <div className="md:col-span-2">
-            <Button type="submit" disabled={submitting}>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Other class (optional)</label>
+            <select
+              value={classId}
+              onChange={(e) => setClassId(e.target.value)}
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+            >
+              <option value="">My main class</option>
+              {classes.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-slate-500">Leave as &quot;My main class&quot; for your homeroom class.</p>
+          </div>
+
+          <div className="md:col-span-2">
+            <Input label="Topic title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+          </div>
+          <div className="md:col-span-2">
+            <label className="mb-1 block text-sm font-medium text-slate-700">Description (optional)</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={2}
+              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+            />
+          </div>
+          <Input label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+          <div className="md:col-span-2">
+            <Button type="submit" disabled={submitting || loadingCatalog}>
               {submitting ? 'Saving…' : 'Add topic'}
             </Button>
           </div>
@@ -78,4 +132,3 @@ export default function MainTeacherLessons() {
     </div>
   )
 }
-

@@ -18,7 +18,7 @@ class AdminTeacherController extends Controller
 
         return response()->json([
             'teachers' => $teachers->map(function ($teacher) {
-                return [
+                $payload = [
                     'id' => $teacher->id,
                     'user' => [
                         'id' => $teacher->user->id,
@@ -30,32 +30,62 @@ class AdminTeacherController extends Controller
                     'is_main_teacher' => $teacher->is_main_teacher,
                     'created_at' => $teacher->created_at,
                 ];
+                if ($teacher->homeroomClass) {
+                    $payload['class'] = [
+                        'id' => $teacher->homeroomClass->id,
+                        'name' => $teacher->homeroomClass->name,
+                    ];
+                }
+                if ($teacher->subjects->isNotEmpty()) {
+                    $payload['subjects'] = $teacher->subjects->map(fn ($s) => ['id' => $s->id, 'name' => $s->name]);
+                }
+                return $payload;
             }),
         ]);
     }
 
+    public function mainTeacherClassDetails($id)
+    {
+        $data = $this->adminTeacherService->getMainTeacherClassDetails((int) $id);
+        return response()->json($data);
+    }
+
     public function store(StoreTeacherRequest $request)
     {
+        $validated = $request->validated();
         $result = $this->adminTeacherService->createTeacher(
-            name: $request->validated('name'),
-            email: $request->validated('email'),
-            isMainTeacher: (bool) $request->validated('is_main_teacher'),
+            name: $validated['name'],
+            email: $validated['email'] ?? null,
+            isMainTeacher: (bool) $validated['is_main_teacher'],
+            classId: isset($validated['class_id']) ? (int) $validated['class_id'] : null,
+            subjectId: isset($validated['subject_id']) ? (int) $validated['subject_id'] : null,
         );
+
+        $teacher = $result['teacher'];
+        $payload = [
+            'id' => $teacher->id,
+            'user' => [
+                'id' => $teacher->user->id,
+                'name' => $teacher->user->name,
+                'email' => $teacher->user->email,
+                'username' => $teacher->user->username,
+                'role' => $teacher->user->role,
+            ],
+            'is_main_teacher' => $teacher->is_main_teacher,
+        ];
+        if ($teacher->relationLoaded('homeroomClass') && $teacher->homeroomClass) {
+            $payload['class'] = [
+                'id' => $teacher->homeroomClass->id,
+                'name' => $teacher->homeroomClass->name,
+            ];
+        }
+        if ($teacher->relationLoaded('subjects') && $teacher->subjects->isNotEmpty()) {
+            $payload['subjects'] = $teacher->subjects->map(fn ($s) => ['id' => $s->id, 'name' => $s->name]);
+        }
 
         return response()->json([
             'message' => 'Teacher created.',
-            'teacher' => [
-                'id' => $result['teacher']->id,
-                'user' => [
-                    'id' => $result['teacher']->user->id,
-                    'name' => $result['teacher']->user->name,
-                    'email' => $result['teacher']->user->email,
-                    'username' => $result['teacher']->user->username,
-                    'role' => $result['teacher']->user->role,
-                ],
-                'is_main_teacher' => $result['teacher']->is_main_teacher,
-            ],
-            // Return once so desktop app can show/print credentials
+            'teacher' => $payload,
             'credentials' => [
                 'username' => $result['username'],
                 'password' => $result['password'],

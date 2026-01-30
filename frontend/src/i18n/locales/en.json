@@ -1,0 +1,62 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "role": "Role"
+  },
+  "auth": {
+    "welcomeBack": "Welcome Back",
+    "signInDescription": "Sign in to your School Management account",
+    "emailOrUsername": "Email or Username",
+    "enterEmailOrUsername": "Enter your email or username",
+    "enterPassword": "Enter your password",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "loginFailed": "Login failed.",
+    "emailOrUsernameRequired": "Email or username is required.",
+    "passwordRequired": "Password is required.",
+    "needHelp": "Need help? Contact your system administrator",
+    "unauthorized": "Unauthorized",
+    "accessDenied": "You don't have permission to access this page.",
+    "signedInAs": "Signed in as"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "students": "Students",
+    "teachers": "Teachers",
+    "classes": "Classes",
+    "subjects": "Subjects",
+    "grades": "Grades",
+    "reports": "Reports",
+    "settings": "Settings",
+    "profile": "Profile"
+  },
+  "errors": {
+    "pageNotFound": "Page Not Found",
+    "pageNotFoundDescription": "The page you're looking for doesn't exist.",
+    "goHome": "Go Home",
+    "somethingWentWrong": "Something went wrong",
+    "tryAgain": "Try Again"
+  },
+  "school": {
+    "schoolManagement": "School Management",
+    "schoolManagementSystem": "School Management System"
+  }
+}

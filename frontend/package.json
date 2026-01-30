@@ -8,13 +8,17 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check-translations": "node scripts/check-translations.js"
   },
   "dependencies": {
     "axios": "^1.13.4",
     "electron": "^40.0.0",
+    "i18next": "^25.8.0",
+    "i18next-browser-languagedetector": "^8.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-i18next": "^16.5.4",
     "react-router-dom": "^6.30.1"
   },
   "devDependencies": {

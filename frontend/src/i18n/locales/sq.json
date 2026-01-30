@@ -1,0 +1,62 @@
+{
+  "common": {
+    "welcome": "Mirësevini",
+    "login": "Hyrje",
+    "logout": "Dalje",
+    "email": "Email",
+    "password": "Fjalëkalimi",
+    "username": "Emri i përdoruesit",
+    "submit": "Dërgo",
+    "cancel": "Anulo",
+    "save": "Ruaj",
+    "delete": "Fshi",
+    "edit": "Ndrysho",
+    "add": "Shto",
+    "search": "Kërko",
+    "loading": "Duke u ngarkuar...",
+    "error": "Gabim",
+    "success": "Sukses",
+    "confirm": "Konfirmo",
+    "yes": "Po",
+    "no": "Jo",
+    "role": "Roli"
+  },
+  "auth": {
+    "welcomeBack": "Mirësevini Përsëri",
+    "signInDescription": "Hyni në llogarinë tuaj të Menaxhimit të Shkollës",
+    "emailOrUsername": "Email ose Emri i Përdoruesit",
+    "enterEmailOrUsername": "Shkruani email-in ose emrin e përdoruesit",
+    "enterPassword": "Shkruani fjalëkalimin tuaj",
+    "signIn": "Hyr",
+    "signingIn": "Duke u kyçur...",
+    "loginFailed": "Hyrja dështoi.",
+    "emailOrUsernameRequired": "Email-i ose emri i përdoruesit është i detyrueshëm.",
+    "passwordRequired": "Fjalëkalimi është i detyrueshëm.",
+    "needHelp": "Keni nevojë për ndihmë? Kontaktoni administratorin e sistemit",
+    "unauthorized": "I paautorizuar",
+    "accessDenied": "Nuk keni leje për të hyrë në këtë faqe.",
+    "signedInAs": "I kyçur si"
+  },
+  "navigation": {
+    "dashboard": "Paneli Kryesor",
+    "students": "Nxënësit",
+    "teachers": "Mësuesit",
+    "classes": "Klasat",
+    "subjects": "Lëndët",
+    "grades": "Notat",
+    "reports": "Raportet",
+    "settings": "Cilësimet",
+    "profile": "Profili"
+  },
+  "errors": {
+    "pageNotFound": "Faqja Nuk u Gjet",
+    "pageNotFoundDescription": "Faqja që po kërkoni nuk ekziston.",
+    "goHome": "Shko në Shtëpi",
+    "somethingWentWrong": "Diçka shkoi keq",
+    "tryAgain": "Provo Përsëri"
+  },
+  "school": {
+    "schoolManagement": "Menaxhimi i Shkollës",
+    "schoolManagementSystem": "Sistemi i Menaxhimit të Shkollës"
+  }
+}

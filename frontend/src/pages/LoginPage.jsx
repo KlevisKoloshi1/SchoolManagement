@@ -1,11 +1,14 @@
 import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../auth/AuthContext'
 import { roleHomePath } from '../router/roleNav'
 import { Alert, Button, Card, Input } from '../components/ui'
 import { Logo } from '../components/Logo'
+import { LanguageSwitcher } from '../components/LanguageSwitcher'
 
 export default function LoginPage() {
+  const { t } = useTranslation()
   const { signIn } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -20,8 +23,8 @@ export default function LoginPage() {
 
   function validate() {
     const next = {}
-    if (!login.trim()) next.login = 'Email or username is required.'
-    if (!password) next.password = 'Password is required.'
+    if (!login.trim()) next.login = t('auth.emailOrUsernameRequired')
+    if (!password) next.password = t('auth.passwordRequired')
     setFieldErrors(next)
     return Object.keys(next).length === 0
   }
@@ -36,7 +39,7 @@ export default function LoginPage() {
       const user = await signIn({ login, password })
       navigate(from || roleHomePath(user.role), { replace: true })
     } catch (err) {
-      const message = err?.response?.data?.message || 'Login failed.'
+      const message = err?.response?.data?.message || t('auth.loginFailed')
       setError(message)
     } finally {
       setSubmitting(false)
@@ -44,7 +47,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-background">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background relative">
+      {/* Language Switcher - Top Right Corner */}
+      <div className="absolute top-6 right-6 z-10">
+        <LanguageSwitcher compact />
+      </div>
+      
       {/* Background Pattern */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
@@ -58,7 +66,7 @@ export default function LoginPage() {
             <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg relative overflow-hidden">
               <img 
                 src="/icon.ico" 
-                alt="School Management Logo" 
+                alt={t('school.schoolManagement')} 
                 className="w-10 h-10 object-contain absolute inset-0 m-auto"
                 onError={(e) => {
                   // Hide the image and show the SVG fallback
@@ -69,8 +77,8 @@ export default function LoginPage() {
               <Logo size={32} className="text-white hidden" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-          <p className="text-muted text-sm">Sign in to your School Management account</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('auth.welcomeBack')}</h1>
+          <p className="text-muted text-sm">{t('auth.signInDescription')}</p>
         </div>
 
         {/* Login Card */}
@@ -83,20 +91,20 @@ export default function LoginPage() {
             ) : null}
             
             <Input
-              label="Email or Username"
+              label={t('auth.emailOrUsername')}
               value={login}
               onChange={(e) => setLogin(e.target.value)}
-              placeholder="Enter your email or username"
+              placeholder={t('auth.enterEmailOrUsername')}
               autoComplete="username"
               error={fieldErrors.login}
             />
             
             <Input
-              label="Password"
+              label={t('common.password')}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder={t('auth.enterPassword')}
               autoComplete="current-password"
               error={fieldErrors.password}
             />
@@ -109,10 +117,10 @@ export default function LoginPage() {
               {submitting ? (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Signing in...
+                  {t('auth.signingIn')}
                 </div>
               ) : (
-                'Sign In'
+                t('auth.signIn')
               )}
             </Button>
           </form>
@@ -128,7 +136,7 @@ export default function LoginPage() {
         {/* Additional Help */}
         <div className="mt-4 text-center">
           <p className="text-xs text-muted-foreground">
-            Need help? Contact your system administrator
+            {t('auth.needHelp')}
           </p>
         </div>
       </div>

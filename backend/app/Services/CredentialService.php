@@ -42,7 +42,7 @@ class CredentialService
             $password .= $all[random_int(0, strlen($all) - 1)];
         }
 
-        return Str::shuffle($password);
+        return str_shuffle($password);
     }
 }
 

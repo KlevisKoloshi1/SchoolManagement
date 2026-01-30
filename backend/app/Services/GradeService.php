@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 class GradeService
 {
-    public function create(Teacher $teacher, int $studentId, int $subjectId, int $gradeValue, string $date): Grade
+    public function create(Teacher $teacher, int $studentId, int $subjectId, int $gradeValue, string $date, ?int $lessonTopicId = null): Grade
     {
         $student = Student::query()->with('class')->findOrFail($studentId);
         Subject::query()->findOrFail($subjectId);
@@ -28,17 +28,25 @@ class GradeService
             ]);
         }
 
-        if ($teacher->is_main_teacher && $teacher->homeroomClass && $student->class_id !== $teacher->homeroomClass->id) {
-            throw ValidationException::withMessages([
-                'student_id' => ['Student is not in your class.'],
-            ]);
+        if ($lessonTopicId !== null) {
+            \App\Models\LessonTopic::query()
+                ->where('id', $lessonTopicId)
+                ->where('teacher_id', $teacher->id)
+                ->where('subject_id', $subjectId)
+                ->firstOrFail();
         }
 
-        return DB::transaction(function () use ($teacher, $studentId, $subjectId, $gradeValue, $date) {
+        // Main teacher can act as simple teacher for other classes: allow any student when teacher has the subject.
+        if ($teacher->is_main_teacher && $teacher->homeroomClass && $student->class_id !== $teacher->homeroomClass->id) {
+            // Allow: main teacher may switch to another class and record grades there.
+        }
+
+        return DB::transaction(function () use ($teacher, $studentId, $subjectId, $gradeValue, $date, $lessonTopicId) {
             return Grade::query()->create([
                 'student_id' => $studentId,
                 'subject_id' => $subjectId,
                 'teacher_id' => $teacher->id,
+                'lesson_topic_id' => $lessonTopicId,
                 'grade' => $gradeValue,
                 'date' => $date,
             ]);

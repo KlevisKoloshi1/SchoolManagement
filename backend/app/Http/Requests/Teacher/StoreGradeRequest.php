@@ -16,6 +16,7 @@ class StoreGradeRequest extends FormRequest
         return [
             'student_id' => ['required', 'integer', 'exists:students,id'],
             'subject_id' => ['required', 'integer', 'exists:subjects,id'],
+            'lesson_topic_id' => ['nullable', 'integer', 'exists:lesson_topics,id'],
             'grade' => ['required', 'integer', 'min:0', 'max:100'],
             'date' => ['required', 'date'],
         ];

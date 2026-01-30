@@ -36,8 +36,10 @@ Route::middleware('throttle:api')->group(function () {
         Route::prefix('main-teacher')->middleware('role:main_teacher')->group(function () {
             Route::get('/students', [MainTeacherStudentController::class, 'index']);
             Route::post('/students', [MainTeacherStudentController::class, 'store']);
+            Route::delete('/students/{id}', [MainTeacherStudentController::class, 'destroy']);
             Route::get('/subjects', [\App\Http\Controllers\MainTeacher\MainTeacherCatalogController::class, 'subjects']);
             Route::get('/classes', [\App\Http\Controllers\MainTeacher\MainTeacherCatalogController::class, 'classes']);
+            Route::get('/lesson-topics', [MainTeacherLessonTopicController::class, 'index']);
             Route::post('/lesson-topics', [MainTeacherLessonTopicController::class, 'store']);
             Route::post('/absences', [MainTeacherAbsenceController::class, 'store']);
             Route::post('/grades', [MainTeacherGradeController::class, 'store']);
@@ -47,6 +49,7 @@ Route::middleware('throttle:api')->group(function () {
             Route::get('/subjects', [TeacherCatalogController::class, 'subjects']);
             Route::get('/classes', [TeacherCatalogController::class, 'classes']);
             Route::get('/classes/{classId}/students', [TeacherCatalogController::class, 'classStudents']);
+            Route::get('/lesson-topics', [TeacherLessonTopicController::class, 'index']);
             Route::post('/lesson-topics', [TeacherLessonTopicController::class, 'store']);
             Route::post('/absences', [TeacherAbsenceController::class, 'store']);
             Route::post('/grades', [TeacherGradeController::class, 'store']);

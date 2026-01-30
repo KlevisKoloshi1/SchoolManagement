@@ -19,13 +19,25 @@ class MainTeacherStudentController extends Controller
     public function index(Request $request)
     {
         $teacher = $this->teacherContext->getTeacherOrFail($request->user());
-        $class = $teacher->homeroomClass;
+        $homeroomClass = $teacher->homeroomClass;
+        $classId = $request->query('class_id') ? (int) $request->query('class_id') : null;
+
+        $class = $classId !== null
+            ? \App\Models\SchoolClass::query()->find($classId)
+            : $homeroomClass;
+
         if (! $class) {
-            return response()->json(['students' => [], 'class' => null]);
+            return response()->json([
+                'students' => [],
+                'class' => null,
+                'homeroom_class' => $homeroomClass ? ['id' => $homeroomClass->id, 'name' => $homeroomClass->name] : null,
+            ]);
         }
+
         $students = $class->students()->with('user')->orderBy('id')->get();
         return response()->json([
             'class' => ['id' => $class->id, 'name' => $class->name],
+            'homeroom_class' => $homeroomClass ? ['id' => $homeroomClass->id, 'name' => $homeroomClass->name] : null,
             'students' => $students->map(fn ($s) => [
                 'id' => $s->id,
                 'user' => [
@@ -62,12 +74,17 @@ class MainTeacherStudentController extends Controller
                     'role' => $result['student']->user->role,
                 ],
             ],
-            // Parent uses student credentials (same login)
             'credentials' => [
                 'username' => $result['username'],
                 'password' => $result['password'],
             ],
         ], 201);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $this->service->deleteStudent($request->user(), (int) $id);
+        return response()->json(['message' => 'Student deleted.']);
     }
 }
 

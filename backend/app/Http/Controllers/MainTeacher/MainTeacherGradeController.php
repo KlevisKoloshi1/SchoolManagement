@@ -25,6 +25,7 @@ class MainTeacherGradeController extends Controller
             subjectId: (int) $request->validated('subject_id'),
             gradeValue: (int) $request->validated('grade'),
             date: $request->validated('date'),
+            lessonTopicId: $request->validated('lesson_topic_id') ? (int) $request->validated('lesson_topic_id') : null,
         );
 
         return response()->json([

@@ -16,6 +16,7 @@ class StoreAbsenceRequest extends FormRequest
         return [
             'student_id' => ['required', 'integer', 'exists:students,id'],
             'subject_id' => ['required', 'integer', 'exists:subjects,id'],
+            'lesson_topic_id' => ['nullable', 'integer', 'exists:lesson_topics,id'],
             'date' => ['required', 'date'],
             'justified' => ['sometimes', 'boolean'],
         ];

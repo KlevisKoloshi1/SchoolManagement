@@ -25,6 +25,7 @@ class TeacherAbsenceController extends Controller
             subjectId: (int) $request->validated('subject_id'),
             date: $request->validated('date'),
             justified: (bool) ($request->validated('justified') ?? false),
+            lessonTopicId: $request->validated('lesson_topic_id') ? (int) $request->validated('lesson_topic_id') : null,
         );
 
         return response()->json([

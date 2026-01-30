@@ -18,7 +18,7 @@ class StudentAbsenceController extends Controller
 
         $absences = Absence::query()
             ->where('student_id', $student->id)
-            ->with(['subject:id,name', 'teacher.user:id,name,username'])
+            ->with(['subject:id,name', 'lessonTopic:id,title,date', 'teacher.user:id,name,username'])
             ->orderByDesc('date')
             ->get()
             ->map(function (Absence $a) {
@@ -27,6 +27,7 @@ class StudentAbsenceController extends Controller
                     'date' => $a->date->toDateString(),
                     'justified' => $a->justified,
                     'subject' => $a->subject ? ['id' => $a->subject->id, 'name' => $a->subject->name] : null,
+                    'topic' => $a->lessonTopic ? ['id' => $a->lessonTopic->id, 'title' => $a->lessonTopic->title] : null,
                     'teacher' => $a->teacher && $a->teacher->user ? [
                         'id' => $a->teacher->id,
                         'name' => $a->teacher->user->name,

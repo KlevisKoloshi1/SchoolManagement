@@ -18,7 +18,7 @@ class StudentGradeController extends Controller
 
         $grades = Grade::query()
             ->where('student_id', $student->id)
-            ->with(['subject:id,name', 'teacher.user:id,name,username'])
+            ->with(['subject:id,name', 'lessonTopic:id,title,date', 'teacher.user:id,name,username'])
             ->orderByDesc('date')
             ->get()
             ->map(function (Grade $g) {
@@ -27,6 +27,7 @@ class StudentGradeController extends Controller
                     'grade' => $g->grade,
                     'date' => $g->date->toDateString(),
                     'subject' => $g->subject ? ['id' => $g->subject->id, 'name' => $g->subject->name] : null,
+                    'topic' => $g->lessonTopic ? ['id' => $g->lessonTopic->id, 'title' => $g->lessonTopic->title] : null,
                     'teacher' => $g->teacher && $g->teacher->user ? [
                         'id' => $g->teacher->id,
                         'name' => $g->teacher->user->name,

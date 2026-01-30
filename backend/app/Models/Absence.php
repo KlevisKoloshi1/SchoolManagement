@@ -14,6 +14,7 @@ class Absence extends Model
         'student_id',
         'subject_id',
         'teacher_id',
+        'lesson_topic_id',
         'date',
         'justified',
     ];
@@ -36,6 +37,11 @@ class Absence extends Model
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class);
+    }
+
+    public function lessonTopic(): BelongsTo
+    {
+        return $this->belongsTo(LessonTopic::class);
     }
 }
 

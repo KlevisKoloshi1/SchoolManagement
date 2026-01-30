@@ -1,8 +1,17 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getGrades } from '../../api/student'
 import { Alert, Card, Spinner } from '../../components/ui'
 
+function subjectLabel(t, name) {
+  if (!name) return '—'
+  const key = 'subjects.' + name
+  const val = t(key)
+  return val === key ? name : val
+}
+
 export default function StudentGrades() {
+  const { t } = useTranslation()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [grades, setGrades] = useState([])
@@ -24,27 +33,25 @@ export default function StudentGrades() {
       }
     }
     run()
-    return () => {
-      mounted = false
-    }
+    return () => { mounted = false }
   }, [])
 
   return (
     <div className="space-y-6">
       <div>
-        <div className="text-2xl font-semibold text-slate-900">Grades</div>
-        <div className="text-sm text-slate-600">Your grades (read-only).</div>
+        <div className="text-2xl font-semibold text-slate-900">{t('student.gradesTitle')}</div>
+        <div className="text-sm text-slate-600">{t('student.gradesDescription')}</div>
       </div>
 
-      <Card title="Grades list">
+      <Card title={t('student.gradesTitle')}>
         {loading ? (
           <div className="flex items-center gap-2 text-sm text-slate-600">
-            <Spinner /> Loading…
+            <Spinner /> {t('common.loading')}
           </div>
         ) : null}
         {error ? <Alert kind="error">{error}</Alert> : null}
         {!loading && !error && grades.length === 0 ? (
-          <div className="text-sm text-slate-600">No grades found.</div>
+          <div className="text-sm text-slate-600">{t('student.noGrades')}</div>
         ) : null}
 
         {!loading && !error && grades.length > 0 ? (
@@ -52,17 +59,19 @@ export default function StudentGrades() {
             <table className="w-full text-left text-sm">
               <thead className="text-xs text-slate-500">
                 <tr>
-                  <th className="py-2">Subject</th>
-                  <th className="py-2">Grade</th>
-                  <th className="py-2">Date</th>
+                  <th className="py-2">{t('student.subject')}</th>
+                  <th className="py-2">{t('student.topic')}</th>
+                  <th className="py-2">{t('student.grade')}</th>
+                  <th className="py-2">{t('student.date')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {grades.map((g, idx) => (
                   <tr key={g.id || idx}>
-                    <td className="py-2">{g.subject?.name || g.subject_name || '—'}</td>
+                    <td className="py-2">{g.subject ? subjectLabel(t, g.subject.name) : '—'}</td>
+                    <td className="py-2">{g.topic?.title ?? '—'}</td>
                     <td className="py-2">{g.grade ?? '—'}</td>
-                    <td className="py-2">{g.graded_on || g.date || '—'}</td>
+                    <td className="py-2">{g.date ?? '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -73,4 +82,3 @@ export default function StudentGrades() {
     </div>
   )
 }
-

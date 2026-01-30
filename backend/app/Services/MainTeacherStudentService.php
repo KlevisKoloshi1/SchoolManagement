@@ -59,5 +59,30 @@ class MainTeacherStudentService
             ];
         });
     }
+
+    public function deleteStudent(User $mainTeacherUser, int $studentId): void
+    {
+        $teacher = $mainTeacherUser->teacher;
+        $class = $teacher?->homeroomClass;
+
+        if (! $teacher || ! $teacher->is_main_teacher || ! $class) {
+            throw ValidationException::withMessages([
+                'class' => ['Main teacher is not assigned to a class.'],
+            ]);
+        }
+
+        $student = Student::query()->with('user')->findOrFail($studentId);
+        if ($student->class_id !== $class->id) {
+            throw ValidationException::withMessages([
+                'student_id' => ['Student is not in your class. You can only delete students from your main class.'],
+            ]);
+        }
+
+        DB::transaction(function () use ($student) {
+            $userId = $student->user_id;
+            $student->delete();
+            \App\Models\User::query()->where('id', $userId)->delete();
+        });
+    }
 }
 

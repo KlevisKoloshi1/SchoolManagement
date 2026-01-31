@@ -5,7 +5,6 @@ import { ROLE, roleHomePath } from './roleNav'
 import { useAuth } from '../auth/AuthContext'
 
 import LoginPage from '../pages/LoginPage'
-import UnauthorizedPage from '../pages/UnauthorizedPage'
 import NotFoundPage from '../pages/NotFoundPage'
 
 import AdminDashboard from '../pages/admin/AdminDashboard'
@@ -13,6 +12,7 @@ import AdminTeachers from '../pages/admin/AdminTeachers'
 import AdminMainTeacherClassDetails from '../pages/admin/AdminMainTeacherClassDetails'
 
 import { MainTeacherClassProvider } from '../contexts/MainTeacherClassContext'
+import { TeacherClassProvider } from '../contexts/TeacherClassContext'
 import MainTeacherDashboard from '../pages/mainTeacher/MainTeacherDashboard'
 import MainTeacherStudents from '../pages/mainTeacher/MainTeacherStudents'
 import MainTeacherLessons from '../pages/mainTeacher/MainTeacherLessons'
@@ -29,7 +29,7 @@ import StudentGrades from '../pages/student/StudentGrades'
 import StudentAbsences from '../pages/student/StudentAbsences'
 
 function RootRedirect() {
-  const { role, isAuthenticated, isBootstrapped } = useAuth()
+  const { role, isAuthenticated, isBootstrapped, user } = useAuth()
   
   if (!isBootstrapped) {
     return (
@@ -40,11 +40,17 @@ function RootRedirect() {
   }
   
   if (!isAuthenticated) {
+    console.log('RootRedirect: Not authenticated, going to login')
     return <Navigate to="/login" replace />
   }
   
   const homePath = roleHomePath(role)
-  console.log('Root redirect:', { role, homePath })
+  console.log('RootRedirect: Authenticated user redirecting to dashboard', { 
+    role, 
+    homePath, 
+    user: user?.name,
+    userRole: user?.role
+  })
   return <Navigate to={homePath} replace />
 }
 
@@ -52,7 +58,8 @@ export function makeRouter() {
   return createBrowserRouter([
     { path: '/', element: <RootRedirect /> },
     { path: '/login', element: <LoginPage /> },
-    { path: '/unauthorized', element: <UnauthorizedPage /> },
+
+
 
     {
       element: <ProtectedRoute allowedRoles={[ROLE.admin]} />,
@@ -92,7 +99,11 @@ export function makeRouter() {
       element: <ProtectedRoute allowedRoles={[ROLE.teacher]} />,
       children: [
         {
-          element: <DashboardLayout />,
+          element: (
+            <TeacherClassProvider>
+              <DashboardLayout />
+            </TeacherClassProvider>
+          ),
           children: [
             { path: '/teacher/dashboard', element: <TeacherDashboard /> },
             { path: '/teacher/lessons', element: <TeacherLessons /> },
@@ -120,4 +131,5 @@ export function makeRouter() {
     { path: '*', element: <NotFoundPage /> },
   ])
 }
+
 

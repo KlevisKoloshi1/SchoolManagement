@@ -36,15 +36,14 @@ export default function LoginPage() {
 
     setSubmitting(true)
     try {
-      console.log('Attempting login...')
+      console.log('Attempting login with:', { login })
       const user = await signIn({ login, password })
-      console.log('Login successful, user:', user)
-      console.log('Redirecting to:', from || roleHomePath(user.role))
+      console.log('Login successful, user role:', user.role)
       
-      // Small delay to ensure state is updated
-      setTimeout(() => {
-        navigate(from || roleHomePath(user.role), { replace: true })
-      }, 100)
+      // Navigate immediately to the correct dashboard
+      const targetPath = from || roleHomePath(user.role)
+      console.log('Navigating to:', targetPath)
+      navigate(targetPath, { replace: true })
     } catch (err) {
       console.error('Login failed:', err)
       const message = err?.response?.data?.message || err?.message || t('auth.loginFailed')

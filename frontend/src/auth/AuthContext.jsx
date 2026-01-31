@@ -1,16 +1,38 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import * as authApi from '../api/auth'
 import { setAuthToken, setUnauthorizedHandler } from '../api/axios'
+import { ROLE } from '../router/roleNav'
 
 const AuthContext = createContext(null)
 
 const STORAGE_KEY = 'sm_auth_v1'
 
+const VALID_ROLES = [ROLE.admin, ROLE.main_teacher, ROLE.teacher, ROLE.student]
+
+function normalizeRole(role) {
+  if (!role || typeof role !== 'string') return null
+  const r = role.trim().toLowerCase()
+  
+  // Direct matches
+  if (VALID_ROLES.includes(r)) return r
+  
+  // Handle variations
+  if (r === 'mainteacher' || r === 'main teacher' || r === 'main-teacher') return ROLE.main_teacher
+  if (r === 'administrator') return ROLE.admin
+  
+  // Return original if no normalization needed
+  return r
+}
+
 function readSession() {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY)
     if (!raw) return null
-    return JSON.parse(raw)
+    const session = JSON.parse(raw)
+    if (session?.user?.role) {
+      session.user.role = normalizeRole(session.user.role) || session.user.role
+    }
+    return session
   } catch {
     return null
   }
@@ -49,20 +71,31 @@ export function AuthProvider({ children }) {
       const data = await authApi.login({ login, password })
       
       // Validate the response structure
-      if (!data || !data.token || !data.user || !data.user.role) {
+      if (!data || !data.token || !data.user) {
         throw new Error('Invalid login response from server')
       }
       
-      const next = { token: data.token, user: data.user }
+      const role = normalizeRole(data.user.role) || data.user.role
+      const user = { ...data.user, role }
+      
+      console.log('Login successful:', { 
+        originalRole: data.user.role, 
+        normalizedRole: role, 
+        userName: user.name 
+      })
+      
+      // Set token in axios immediately so the first request after navigate has the token
+      setAuthToken(data.token)
+      
+      const next = { token: data.token, user }
       writeSession(next)
       setToken(next.token)
       setUser(next.user)
       
-      console.log('Login successful:', { role: data.user.role, user: data.user.name })
       return next.user
     } catch (error) {
       console.error('Login error:', error)
-      // Clear any partial state
+      setAuthToken(null)
       writeSession(null)
       setToken(null)
       setUser(null)
@@ -83,15 +116,19 @@ export function AuthProvider({ children }) {
   }
 
   const value = useMemo(
-    () => ({
-      token,
-      user,
-      role: user?.role || null,
-      isAuthenticated: Boolean(token && user),
-      isBootstrapped,
-      signIn,
-      signOut,
-    }),
+    () => {
+      const role = user?.role ? normalizeRole(user.role) || user.role : null
+      const authState = {
+        token,
+        user: user ? { ...user, role } : null,
+        role,
+        isAuthenticated: Boolean(token && user),
+        isBootstrapped,
+        signIn,
+        signOut,
+      }
+      return authState
+    },
     [token, user, isBootstrapped],
   )
 

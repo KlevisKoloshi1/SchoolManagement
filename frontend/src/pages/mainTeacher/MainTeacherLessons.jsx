@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { getSubjects, getStudents, addLessonTopic } from '../../api/mainTeacher'
+import { getSubjects, getStudents, getLessonTopics, addLessonTopic } from '../../api/mainTeacher'
 import { Alert, Button, Card, Input } from '../../components/ui'
 import { useMainTeacherClass } from '../../contexts/MainTeacherClassContext'
 
 export default function MainTeacherLessons() {
   const { currentClassId } = useMainTeacherClass()
   const [subjects, setSubjects] = useState([])
+  const [topics, setTopics] = useState([])
   const [classInfo, setClassInfo] = useState(null)
   const [homeroomClass, setHomeroomClass] = useState(null)
   const [subjectId, setSubjectId] = useState('')
@@ -15,6 +16,7 @@ export default function MainTeacherLessons() {
   const [date, setDate] = useState('')
 
   const [loadingCatalog, setLoadingCatalog] = useState(true)
+  const [loadingTopics, setLoadingTopics] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
@@ -32,6 +34,19 @@ export default function MainTeacherLessons() {
       .finally(() => setLoadingCatalog(false))
   }, [currentClassId])
 
+  useEffect(() => {
+    const classId = currentClassId ?? homeroomClass?.id
+    if (classId == null) {
+      setTopics([])
+      return
+    }
+    setLoadingTopics(true)
+    getLessonTopics(null, classId)
+      .then((d) => setTopics(d.lesson_topics || []))
+      .catch(() => setTopics([]))
+      .finally(() => setLoadingTopics(false))
+  }, [currentClassId, homeroomClass?.id])
+
   async function onSubmit(e) {
     e.preventDefault()
     setError(null)
@@ -42,15 +57,21 @@ export default function MainTeacherLessons() {
 
     setSubmitting(true)
     try {
+      const classId = currentClassId ?? homeroomClass?.id
       const payload = { subject_id: Number(subjectId), title, date }
       if (description.trim()) payload.description = description.trim()
-      if (currentClassId != null) payload.class_id = currentClassId
+      if (classId != null) payload.class_id = classId
       await addLessonTopic(payload)
       setSuccess('Lesson topic added.')
       setSubjectId('')
       setTitle('')
       setDescription('')
       setDate('')
+      if (classId != null) {
+        getLessonTopics(null, classId)
+          .then((d) => setTopics(d.lesson_topics || []))
+          .catch(() => {})
+      }
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to add lesson topic.')
     } finally {
@@ -130,6 +151,28 @@ export default function MainTeacherLessons() {
           </div>
         </form>
       </Card>
+
+      {(currentClassId != null || homeroomClass?.id != null) && (
+        <Card title="Lesson topics (this class)">
+          {loadingTopics ? (
+            <div className="py-4 text-slate-500">Loading topics…</div>
+          ) : topics.length === 0 ? (
+            <p className="py-4 text-slate-500">No lesson topics yet. Add one above.</p>
+          ) : (
+            <ul className="divide-y divide-slate-200">
+              {topics.map((t) => (
+                <li key={t.id} className="py-3 flex justify-between items-start gap-4">
+                  <div>
+                    <span className="font-medium text-slate-900">{t.title}</span>
+                    {t.subject?.name && <span className="ml-2 text-sm text-slate-500">({t.subject.name})</span>}
+                    {t.date && <span className="ml-2 text-sm text-slate-500">{t.date}</span>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      )}
     </div>
   )
 }

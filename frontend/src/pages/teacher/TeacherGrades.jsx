@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { getSubjects, getClasses, getClassStudents, getLessonTopics, addGrade } from '../../api/teacher'
+import { getSubjects, getClassStudents, getLessonTopics, addGrade } from '../../api/teacher'
+import { useTeacherClass } from '../../contexts/TeacherClassContext'
 import { Alert, Button, Card, Input } from '../../components/ui'
 
 function subjectLabel(t, name) {
@@ -12,12 +14,11 @@ function subjectLabel(t, name) {
 
 export default function TeacherGrades() {
   const { t } = useTranslation()
+  const { currentClassId } = useTeacherClass()
   const [subjects, setSubjects] = useState([])
-  const [classes, setClasses] = useState([])
   const [students, setStudents] = useState([])
   const [topics, setTopics] = useState([])
   const [subjectId, setSubjectId] = useState('')
-  const [classId, setClassId] = useState('')
   const [studentId, setStudentId] = useState('')
   const [lessonTopicId, setLessonTopicId] = useState('')
   const [grade, setGrade] = useState('')
@@ -31,49 +32,46 @@ export default function TeacherGrades() {
   const [success, setSuccess] = useState(null)
 
   useEffect(() => {
-    Promise.all([getSubjects(), getClasses()])
-      .then(([subj, cls]) => {
-        setSubjects(subj.subjects || [])
-        setClasses(cls.classes || [])
-      })
+    getSubjects()
+      .then((d) => setSubjects(d.subjects || []))
       .catch(() => {})
       .finally(() => setLoadingCatalog(false))
   }, [])
 
   useEffect(() => {
-    if (!classId) {
+    if (!currentClassId) {
       setStudents([])
       setStudentId('')
       return
     }
     setLoadingStudents(true)
     setStudentId('')
-    getClassStudents(Number(classId))
+    getClassStudents(currentClassId)
       .then((data) => setStudents(data.students || []))
       .catch(() => setStudents([]))
       .finally(() => setLoadingStudents(false))
-  }, [classId])
+  }, [currentClassId])
 
   useEffect(() => {
-    if (!subjectId || !classId) {
+    if (!subjectId || !currentClassId) {
       setTopics([])
       setLessonTopicId('')
       return
     }
     setLessonTopicId('')
     setLoadingTopics(true)
-    getLessonTopics(Number(subjectId), Number(classId))
+    getLessonTopics(Number(subjectId), currentClassId)
       .then((data) => setTopics(data.lesson_topics || []))
       .catch(() => setTopics([]))
       .finally(() => setLoadingTopics(false))
-  }, [subjectId, classId])
+  }, [subjectId, currentClassId])
 
   async function onSubmit(e) {
     e.preventDefault()
     setError(null)
     setSuccess(null)
+    if (!currentClassId) return setError(t('teacher.selectClassFirst'))
     if (!subjectId) return setError(t('teacher.selectSubject'))
-    if (!classId) return setError(t('teacher.selectClass'))
     if (!studentId) return setError(t('teacher.selectStudent'))
     if (!grade.trim()) return setError(t('student.grade') + ' required')
     if (!date.trim()) return setError(t('teacher.date') + ' required')
@@ -93,7 +91,6 @@ export default function TeacherGrades() {
       setStudentId('')
       setSubjectId('')
       setLessonTopicId('')
-      setClassId('')
       setGrade('')
       setDate('')
     } catch (err) {
@@ -107,8 +104,14 @@ export default function TeacherGrades() {
     <div className="space-y-6">
       <div>
         <div className="text-2xl font-semibold text-slate-900">{t('mainTeacher.gradesTitle')}</div>
-        <div className="text-sm text-slate-600">Record grades by subject, topic and date.</div>
+        <div className="text-sm text-slate-600">Record grades for the class selected on the Dashboard.</div>
       </div>
+
+      {!currentClassId && (
+        <Alert kind="warning">
+          Select a class on the <Link to="/teacher/dashboard" className="underline font-medium">Dashboard</Link> first.
+        </Alert>
+      )}
 
       <Card title="Add Grade">
         <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-2">
@@ -122,24 +125,11 @@ export default function TeacherGrades() {
               onChange={(e) => { setSubjectId(e.target.value); setLessonTopicId('') }}
               className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
               required
+              disabled={!currentClassId}
             >
               <option value="">{t('teacher.selectSubject')}</option>
               {subjects.map((s) => (
                 <option key={s.id} value={s.id}>{subjectLabel(t, s.name)}</option>
-              ))}
-            </select>
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-1 block text-sm font-medium text-slate-700">{t('teacher.selectClass')}</label>
-            <select
-              value={classId}
-              onChange={(e) => setClassId(e.target.value)}
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-              required
-            >
-              <option value="">{t('teacher.selectClass')}</option>
-              {classes.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           </div>
@@ -149,7 +139,7 @@ export default function TeacherGrades() {
               value={lessonTopicId}
               onChange={(e) => setLessonTopicId(e.target.value)}
               className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-              disabled={!subjectId || !classId || loadingTopics}
+              disabled={!subjectId || !currentClassId || loadingTopics}
             >
               <option value="">{t('teacher.selectTopic')}</option>
               {topics.map((tpc) => (
@@ -164,9 +154,9 @@ export default function TeacherGrades() {
               onChange={(e) => setStudentId(e.target.value)}
               className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
               required
-              disabled={!classId || loadingStudents}
+              disabled={!currentClassId || loadingStudents}
             >
-              <option value="">{loadingStudents ? t('common.loading') : !classId ? t('teacher.selectClass') + ' first' : t('teacher.selectStudent')}</option>
+              <option value="">{loadingStudents ? t('common.loading') : !currentClassId ? t('teacher.selectClassFirst') : t('teacher.selectStudent')}</option>
               {students.map((s) => (
                 <option key={s.id} value={s.id}>{s.user.name}</option>
               ))}
@@ -175,7 +165,7 @@ export default function TeacherGrades() {
           <Input label={t('student.grade')} type="number" min={0} max={100} value={grade} onChange={(e) => setGrade(e.target.value)} required />
           <Input label={t('teacher.date')} type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
           <div className="md:col-span-2">
-            <Button type="submit" disabled={submitting || loadingCatalog}>
+            <Button type="submit" disabled={submitting || loadingCatalog || !currentClassId}>
               {submitting ? 'Saving…' : t('teacher.recordGrade')}
             </Button>
           </div>

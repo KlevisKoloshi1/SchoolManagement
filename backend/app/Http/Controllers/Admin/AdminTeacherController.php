@@ -53,12 +53,14 @@ class AdminTeacherController extends Controller
     public function store(StoreTeacherRequest $request)
     {
         $validated = $request->validated();
+        $subjectIds = isset($validated['subject_ids']) ? array_map('intval', $validated['subject_ids']) : null;
         $result = $this->adminTeacherService->createTeacher(
             name: $validated['name'],
             email: $validated['email'] ?? null,
             isMainTeacher: (bool) $validated['is_main_teacher'],
             classId: isset($validated['class_id']) ? (int) $validated['class_id'] : null,
             subjectId: isset($validated['subject_id']) ? (int) $validated['subject_id'] : null,
+            subjectIds: $subjectIds,
         );
 
         $teacher = $result['teacher'];

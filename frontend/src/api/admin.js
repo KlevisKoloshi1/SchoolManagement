@@ -20,11 +20,13 @@ export async function getMainTeacherClassDetails(teacherId) {
   return data
 }
 
-export async function createTeacher({ name, email, is_main_teacher, class_id, subject_id }) {
+export async function createTeacher({ name, email, is_main_teacher, class_id, subject_id, subject_ids }) {
   const body = { name, email, is_main_teacher }
   if (is_main_teacher) {
     body.class_id = class_id
     body.subject_id = subject_id
+  } else if (subject_ids?.length) {
+    body.subject_ids = subject_ids
   }
   const { data } = await apiClient.post('/admin/teachers', body)
   return data

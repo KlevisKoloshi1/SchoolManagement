@@ -36,7 +36,7 @@ class MainTeacherLessonTopicController extends Controller
             $query->where('class_id', $classId);
         }
 
-        $topics = $query->get(['id', 'subject_id', 'class_id', 'title', 'date']);
+        $topics = $query->get();
 
         return response()->json([
             'lesson_topics' => $topics->map(fn ($t) => [
@@ -44,6 +44,7 @@ class MainTeacherLessonTopicController extends Controller
                 'title' => $t->title,
                 'date' => $t->date->toDateString(),
                 'subject_id' => $t->subject_id,
+                'subject' => $t->subject ? ['id' => $t->subject->id, 'name' => $t->subject->name] : null,
             ]),
         ]);
     }

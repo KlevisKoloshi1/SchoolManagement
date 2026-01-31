@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../auth/AuthContext'
-import { navForRole, roleHomePath } from '../router/roleNav'
+import { useNavForRole, roleHomePath } from '../router/roleNav'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { Button } from '../components/ui'
 
@@ -27,7 +27,7 @@ function NavItem({ to, label, icon }) {
 export default function DashboardLayout() {
   const { t } = useTranslation()
   const { user, role, signOut } = useAuth()
-  const nav = navForRole(role)
+  const nav = useNavForRole(role) // Use the new translated navigation hook
 
   // Add icons to navigation items
   const getNavIcon = (path) => {

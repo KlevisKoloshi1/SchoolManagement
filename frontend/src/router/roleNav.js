@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 export const ROLE = {
   admin: 'admin',
   main_teacher: 'main_teacher',
@@ -21,35 +23,47 @@ export function roleHomePath(role) {
 }
 
 export function navForRole(role) {
+  // This function now needs to be called from a component that has access to useTranslation
+  // We'll create a hook for this
   switch (role) {
     case ROLE.admin:
       return [
-        { to: '/admin/dashboard', label: 'Dashboard' },
-        { to: '/admin/teachers', label: 'Teachers' },
+        { to: '/admin/dashboard', labelKey: 'navigation.dashboard' },
+        { to: '/admin/teachers', labelKey: 'navigation.teachers' },
       ]
     case ROLE.main_teacher:
       return [
-        { to: '/main-teacher/dashboard', label: 'Dashboard' },
-        { to: '/main-teacher/students', label: 'Students' },
-        { to: '/main-teacher/lessons', label: 'Lessons' },
-        { to: '/main-teacher/absences', label: 'Absences' },
-        { to: '/main-teacher/grades', label: 'Grades' },
+        { to: '/main-teacher/dashboard', labelKey: 'navigation.dashboard' },
+        { to: '/main-teacher/students', labelKey: 'navigation.students' },
+        { to: '/main-teacher/lessons', labelKey: 'mainTeacher.lessons' },
+        { to: '/main-teacher/absences', labelKey: 'mainTeacher.absencesTitle' },
+        { to: '/main-teacher/grades', labelKey: 'mainTeacher.gradesTitle' },
       ]
     case ROLE.teacher:
       return [
-        { to: '/teacher/dashboard', label: 'Dashboard' },
-        { to: '/teacher/lessons', label: 'Lessons' },
-        { to: '/teacher/absences', label: 'Absences' },
-        { to: '/teacher/grades', label: 'Grades' },
+        { to: '/teacher/dashboard', labelKey: 'navigation.dashboard' },
+        { to: '/teacher/lessons', labelKey: 'teacher.lessons' },
+        { to: '/teacher/absences', labelKey: 'mainTeacher.absencesTitle' },
+        { to: '/teacher/grades', labelKey: 'navigation.grades' },
       ]
     case ROLE.student:
       return [
-        { to: '/student/dashboard', label: 'Dashboard' },
-        { to: '/student/grades', label: 'Grades' },
-        { to: '/student/absences', label: 'Absences' },
+        { to: '/student/dashboard', labelKey: 'navigation.dashboard' },
+        { to: '/student/grades', labelKey: 'navigation.grades' },
+        { to: '/student/absences', labelKey: 'mainTeacher.absencesTitle' },
       ]
     default:
       return []
   }
 }
 
+// Hook to get translated navigation for a role
+export function useNavForRole(role) {
+  const { t } = useTranslation()
+  const navItems = navForRole(role)
+  
+  return navItems.map(item => ({
+    ...item,
+    label: t(item.labelKey)
+  }))
+}

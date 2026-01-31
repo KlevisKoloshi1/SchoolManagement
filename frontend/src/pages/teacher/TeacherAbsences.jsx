@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { getSubjects, getClasses, getClassStudents, getLessonTopics, addAbsence } from '../../api/teacher'
+import { getSubjects, getClassStudents, getLessonTopics, addAbsence } from '../../api/teacher'
+import { useTeacherClass } from '../../contexts/TeacherClassContext'
 import { Alert, Button, Card, Input, Select } from '../../components/ui'
 
 function subjectLabel(t, name) {
@@ -12,12 +14,11 @@ function subjectLabel(t, name) {
 
 export default function TeacherAbsences() {
   const { t } = useTranslation()
+  const { currentClassId } = useTeacherClass()
   const [subjects, setSubjects] = useState([])
-  const [classes, setClasses] = useState([])
   const [students, setStudents] = useState([])
   const [topics, setTopics] = useState([])
   const [subjectId, setSubjectId] = useState('')
-  const [classId, setClassId] = useState('')
   const [studentId, setStudentId] = useState('')
   const [lessonTopicId, setLessonTopicId] = useState('')
   const [date, setDate] = useState('')
@@ -31,49 +32,46 @@ export default function TeacherAbsences() {
   const [success, setSuccess] = useState(null)
 
   useEffect(() => {
-    Promise.all([getSubjects(), getClasses()])
-      .then(([subj, cls]) => {
-        setSubjects(subj.subjects || [])
-        setClasses(cls.classes || [])
-      })
+    getSubjects()
+      .then((d) => setSubjects(d.subjects || []))
       .catch(() => {})
       .finally(() => setLoadingCatalog(false))
   }, [])
 
   useEffect(() => {
-    if (!classId) {
+    if (!currentClassId) {
       setStudents([])
       setStudentId('')
       return
     }
     setLoadingStudents(true)
     setStudentId('')
-    getClassStudents(Number(classId))
+    getClassStudents(currentClassId)
       .then((data) => setStudents(data.students || []))
       .catch(() => setStudents([]))
       .finally(() => setLoadingStudents(false))
-  }, [classId])
+  }, [currentClassId])
 
   useEffect(() => {
-    if (!subjectId || !classId) {
+    if (!subjectId || !currentClassId) {
       setTopics([])
       setLessonTopicId('')
       return
     }
     setLessonTopicId('')
     setLoadingTopics(true)
-    getLessonTopics(Number(subjectId), Number(classId))
+    getLessonTopics(Number(subjectId), currentClassId)
       .then((data) => setTopics(data.lesson_topics || []))
       .catch(() => setTopics([]))
       .finally(() => setLoadingTopics(false))
-  }, [subjectId, classId])
+  }, [subjectId, currentClassId])
 
   async function onSubmit(e) {
     e.preventDefault()
     setError(null)
     setSuccess(null)
+    if (!currentClassId) return setError(t('teacher.selectClassFirst'))
     if (!subjectId) return setError(t('teacher.selectSubject'))
-    if (!classId) return setError(t('teacher.selectClass'))
     if (!studentId) return setError(t('teacher.selectStudent'))
     if (!date.trim()) return setError(t('teacher.date') + ' ' + t('common.required'))
 
@@ -90,7 +88,6 @@ export default function TeacherAbsences() {
       setStudentId('')
       setSubjectId('')
       setLessonTopicId('')
-      setClassId('')
       setDate('')
       setJustified(false)
     } catch (err) {
@@ -103,11 +100,6 @@ export default function TeacherAbsences() {
   const subjectOptions = subjects.map(s => ({
     value: s.id,
     label: subjectLabel(t, s.name)
-  }))
-
-  const classOptions = classes.map(c => ({
-    value: c.id,
-    label: c.name
   }))
 
   const studentOptions = students.map(s => ({
@@ -127,9 +119,15 @@ export default function TeacherAbsences() {
           {t('mainTeacher.absencesTitle')}
         </div>
         <div className="text-text-secondary max-w-2xl">
-          Record absences by subject, topic and date. Select subject, class, topic, then student.
+          Record absences for the class selected on the Dashboard. Select subject, topic, then student.
         </div>
       </div>
+
+      {!currentClassId && (
+        <Alert kind="warning">
+          Select a class on the <Link to="/teacher/dashboard" className="underline font-medium">Dashboard</Link> first.
+        </Alert>
+      )}
 
       <Card title={t('teacher.recordAbsence')} className="max-w-4xl">
         <form onSubmit={onSubmit} className="space-y-6">
@@ -151,15 +149,7 @@ export default function TeacherAbsences() {
               options={subjectOptions}
               placeholder={t('teacher.selectSubject')}
               required
-            />
-
-            <Select
-              label={t('teacher.selectClass')}
-              value={classId}
-              onChange={(e) => setClassId(e.target.value)}
-              options={classOptions}
-              placeholder={t('teacher.selectClass')}
-              required
+              disabled={!currentClassId}
             />
 
             <Select
@@ -168,7 +158,7 @@ export default function TeacherAbsences() {
               onChange={(e) => setLessonTopicId(e.target.value)}
               options={topicOptions}
               placeholder={t('teacher.selectTopic')}
-              disabled={!subjectId || !classId || loadingTopics}
+              disabled={!subjectId || !currentClassId || loadingTopics}
             />
 
             <Select
@@ -179,11 +169,11 @@ export default function TeacherAbsences() {
               placeholder={
                 loadingStudents 
                   ? t('common.loading') 
-                  : !classId 
-                    ? t('teacher.selectClass') + ' first' 
+                  : !currentClassId 
+                    ? t('teacher.selectClassFirst') 
                     : t('teacher.selectStudent')
               }
-              disabled={!classId || loadingStudents}
+              disabled={!currentClassId || loadingStudents}
               required
             />
 
@@ -212,7 +202,7 @@ export default function TeacherAbsences() {
           <div className="flex justify-end pt-4">
             <Button 
               type="submit" 
-              disabled={submitting || loadingCatalog}
+              disabled={submitting || loadingCatalog || !currentClassId}
               className="min-w-[140px]"
             >
               {submitting ? t('common.loading') : t('teacher.recordAbsence')}

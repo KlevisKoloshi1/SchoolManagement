@@ -99,11 +99,12 @@ class AdminTeacherService
     }
 
     /**
+     * @param  array<int>|null  $subjectIds
      * @return array{teacher: Teacher, username: string, password: string}
      */
-    public function createTeacher(string $name, ?string $email, bool $isMainTeacher, ?int $classId = null, ?int $subjectId = null): array
+    public function createTeacher(string $name, ?string $email, bool $isMainTeacher, ?int $classId = null, ?int $subjectId = null, ?array $subjectIds = null): array
     {
-        return DB::transaction(function () use ($name, $email, $isMainTeacher, $classId, $subjectId) {
+        return DB::transaction(function () use ($name, $email, $isMainTeacher, $classId, $subjectId, $subjectIds) {
             $username = $this->credentialService->generateUsername($name);
             $passwordPlain = $this->credentialService->generatePassword();
 
@@ -143,6 +144,10 @@ class AdminTeacherService
             if ($isMainTeacher && $subjectId !== null) {
                 Subject::query()->findOrFail($subjectId);
                 $teacher->subjects()->syncWithoutDetaching([$subjectId]);
+            }
+
+            if (! $isMainTeacher && ! empty($subjectIds)) {
+                $teacher->subjects()->sync(array_values($subjectIds));
             }
 
             return [

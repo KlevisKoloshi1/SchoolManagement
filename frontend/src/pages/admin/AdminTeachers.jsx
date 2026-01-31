@@ -9,6 +9,7 @@ export default function AdminTeachers() {
   const [isMainTeacher, setIsMainTeacher] = useState(false)
   const [classId, setClassId] = useState('')
   const [subjectId, setSubjectId] = useState('')
+  const [subjectIds, setSubjectIds] = useState([])
 
   const [classes, setClasses] = useState([])
   const [subjects, setSubjects] = useState([])
@@ -27,12 +28,13 @@ export default function AdminTeachers() {
   }, [])
 
   useEffect(() => {
+    getSubjects().then((d) => setSubjects(d.subjects || [])).catch(() => setSubjects([]))
     if (isMainTeacher) {
       getClasses().then((d) => setClasses(d.classes || [])).catch(() => setClasses([]))
-      getSubjects().then((d) => setSubjects(d.subjects || [])).catch(() => setSubjects([]))
     } else {
       setClassId('')
       setSubjectId('')
+      setSubjectIds([])
     }
   }, [isMainTeacher])
 
@@ -59,6 +61,8 @@ export default function AdminTeachers() {
     if (isMainTeacher) {
       if (!classId) return setError('Class is required for main teacher.')
       if (!subjectId) return setError('Subject is required for main teacher.')
+    } else {
+      if (!subjectIds?.length) return setError('Select at least one subject.')
     }
 
     setSubmitting(true)
@@ -67,6 +71,8 @@ export default function AdminTeachers() {
       if (isMainTeacher) {
         payload.class_id = Number(classId)
         payload.subject_id = Number(subjectId)
+      } else {
+        payload.subject_ids = subjectIds.map((id) => Number(id))
       }
       const data = await createTeacher(payload)
       setCreated(data)
@@ -75,6 +81,7 @@ export default function AdminTeachers() {
       setIsMainTeacher(false)
       setClassId('')
       setSubjectId('')
+      setSubjectIds([])
       await fetchTeachers()
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to create teacher.')
@@ -159,6 +166,32 @@ export default function AdminTeachers() {
                 </select>
               </div>
             </>
+          )}
+
+          {!isMainTeacher && subjects.length > 0 && (
+            <div className="md:col-span-2">
+              <label className="mb-1 block text-sm font-medium text-slate-700">Subjects (this teacher will teach)</label>
+              <div className="flex flex-wrap gap-2 border border-slate-300 rounded-md bg-white p-3">
+                {subjects.map((s) => (
+                  <label key={s.id} className="inline-flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={subjectIds.includes(s.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSubjectIds((prev) => [...prev, s.id])
+                        } else {
+                          setSubjectIds((prev) => prev.filter((id) => id !== s.id))
+                        }
+                      }}
+                      className="h-4 w-4 rounded border-slate-300"
+                    />
+                    <span className="text-sm text-slate-900">{s.name}</span>
+                  </label>
+                ))}
+              </div>
+              <p className="mt-1 text-xs text-slate-500">Select at least one subject.</p>
+            </div>
           )}
 
           <div className="md:col-span-2">

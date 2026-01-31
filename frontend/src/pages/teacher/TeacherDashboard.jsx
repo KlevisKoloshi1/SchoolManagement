@@ -1,9 +1,24 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Card } from '../../components/ui'
+import { getClasses } from '../../api/teacher'
+import { Card, Select } from '../../components/ui'
+import { useTeacherClass } from '../../contexts/TeacherClassContext'
 
 export default function TeacherDashboard() {
   const { t } = useTranslation()
+  const { currentClassId, setCurrentClassId } = useTeacherClass()
+  const [classes, setClasses] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    getClasses()
+      .then((d) => setClasses(d.classes || []))
+      .catch(() => setClasses([]))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const classOptions = classes.map((c) => ({ value: c.id, label: c.name }))
 
   const dashboardCards = [
     {
@@ -35,6 +50,24 @@ export default function TeacherDashboard() {
           {t('teacher.manageSubjects')}
         </div>
       </div>
+
+      {!loading && classes.length > 0 && (
+        <Card title={t('teacher.selectClass')} className="max-w-2xl">
+          <Select
+            label={t('teacher.viewClass')}
+            value={currentClassId ?? ''}
+            onChange={(e) => {
+              const val = e.target.value
+              setCurrentClassId(val === '' ? null : Number(val))
+            }}
+            options={[{ value: '', label: t('teacher.selectClassFirst') }, ...classOptions]}
+            placeholder={t('teacher.selectClassFirst')}
+          />
+          <p className="mt-2 text-sm text-text-secondary">
+            {t('teacher.classSelectionHint')}
+          </p>
+        </Card>
+      )}
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {dashboardCards.map((card, index) => (

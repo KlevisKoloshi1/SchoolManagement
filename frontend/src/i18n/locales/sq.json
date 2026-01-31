@@ -94,7 +94,8 @@
     "justified": "Justifikuar",
     "addNewTopic": "Shto temë të re",
     "absencesTitle": "Mungesat",
-    "gradesTitle": "Notat"
+    "gradesTitle": "Notat",
+    "changeClassOnDashboard": "Ndrysho klasën në Panelin kryesor"
   },
   "teacher": {
     "selectSubject": "Zgjidhni lëndën",

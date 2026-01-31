@@ -38,7 +38,7 @@ export default function AdminMainTeacherClassDetails() {
     )
   }
 
-  const { teacher, class: schoolClass, students } = data
+  const { teacher, class: schoolClass, students, lesson_topics = [] } = data
 
   return (
     <div className="space-y-6">
@@ -55,6 +55,35 @@ export default function AdminMainTeacherClassDetails() {
           </p>
         </div>
       </div>
+
+      <Card title={`Lesson topics (${lesson_topics.length})`}>
+        {lesson_topics.length === 0 ? (
+          <p className="text-slate-500 py-4">No lesson topics recorded for this class yet.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead>
+                <tr>
+                  <th className="py-2 text-left text-xs font-medium text-slate-500 uppercase">Date</th>
+                  <th className="py-2 text-left text-xs font-medium text-slate-500 uppercase">Subject</th>
+                  <th className="py-2 text-left text-xs font-medium text-slate-500 uppercase">Title</th>
+                  <th className="py-2 text-left text-xs font-medium text-slate-500 uppercase">Description</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200">
+                {lesson_topics.map((topic) => (
+                  <tr key={topic.id}>
+                    <td className="py-2 text-sm text-slate-900">{topic.date || '—'}</td>
+                    <td className="py-2 text-sm text-slate-600">{topic.subject?.name || '—'}</td>
+                    <td className="py-2 text-sm text-slate-900">{topic.title}</td>
+                    <td className="py-2 text-sm text-slate-600 max-w-xs truncate">{topic.description || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
 
       <Card title={`Students (${students.length})`}>
         {students.length === 0 ? (

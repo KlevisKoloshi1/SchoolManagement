@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { getStudents, getClasses, getSubjects, getLessonTopics, addGrade } from '../../api/mainTeacher'
+import { getStudents, getSubjects, getLessonTopics, addGrade } from '../../api/mainTeacher'
 import { Alert, Button, Card, Input } from '../../components/ui'
-
-const STORAGE_CLASS_KEY = 'mainTeacher_currentClassId'
+import { useMainTeacherClass } from '../../contexts/MainTeacherClassContext'
 
 function subjectLabel(t, name) {
   if (!name) return ''
@@ -14,16 +14,12 @@ function subjectLabel(t, name) {
 
 export default function MainTeacherGrades() {
   const { t } = useTranslation()
-  const [classes, setClasses] = useState([])
+  const { currentClassId } = useMainTeacherClass()
   const [homeroomClass, setHomeroomClass] = useState(null)
   const [classInfo, setClassInfo] = useState(null)
   const [students, setStudents] = useState([])
   const [subjects, setSubjects] = useState([])
   const [topics, setTopics] = useState([])
-  const [currentClassId, setCurrentClassId] = useState(() => {
-    const stored = sessionStorage.getItem(STORAGE_CLASS_KEY)
-    return stored ? (Number(stored) || null) : null
-  })
   const [studentId, setStudentId] = useState('')
   const [subjectId, setSubjectId] = useState('')
   const [lessonTopicId, setLessonTopicId] = useState('')
@@ -36,25 +32,20 @@ export default function MainTeacherGrades() {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
 
-  useEffect(() => {
-    if (currentClassId != null) sessionStorage.setItem(STORAGE_CLASS_KEY, String(currentClassId))
-    else sessionStorage.removeItem(STORAGE_CLASS_KEY)
-  }, [currentClassId])
+  const isViewingHomeroom = currentClassId == null || (homeroomClass && currentClassId === homeroomClass.id)
 
   useEffect(() => {
     async function load() {
       setLoadingCatalog(true)
       try {
-        const [studentsRes, subjectsRes, classesRes] = await Promise.all([
+        const [studentsRes, subjectsRes] = await Promise.all([
           getStudents(currentClassId ?? undefined),
           getSubjects(),
-          getClasses(),
         ])
         setHomeroomClass(studentsRes.homeroom_class || null)
         setClassInfo(studentsRes.class || null)
         setStudents(studentsRes.students || [])
         setSubjects(subjectsRes.subjects || [])
-        setClasses(classesRes.classes || [])
       } catch {
         setStudents([])
         setClassInfo(null)
@@ -112,11 +103,6 @@ export default function MainTeacherGrades() {
     }
   }
 
-  function handleClassChange(e) {
-    const val = e.target.value
-    setCurrentClassId(val === '' ? null : Number(val))
-  }
-
   return (
     <div className="space-y-6">
       <div>
@@ -124,25 +110,17 @@ export default function MainTeacherGrades() {
         <div className="text-sm text-slate-600">Record grades by subject, topic and date.</div>
       </div>
 
-      {homeroomClass && classes.length > 0 && (
-        <Card title={t('mainTeacher.currentClass')}>
-          <div className="flex flex-wrap items-center gap-2">
-            <label className="text-sm font-medium text-slate-700">{t('mainTeacher.viewClass')}</label>
-            <select
-              value={currentClassId ?? ''}
-              onChange={handleClassChange}
-              className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-            >
-              <option value="">{t('mainTeacher.myClass')} ({homeroomClass.name})</option>
-              {classes.filter((c) => c.id !== homeroomClass.id).map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-            {currentClassId != null && currentClassId !== homeroomClass?.id && classInfo && (
-              <span className="text-sm text-slate-500">{t('mainTeacher.viewingAsTeacher')} – {classInfo.name}</span>
-            )}
-          </div>
-        </Card>
+      {classInfo && (
+        <p className="text-sm text-slate-700">
+          {t('mainTeacher.yourClass')}: <strong>{classInfo.name}</strong>
+          {!isViewingHomeroom && (
+            <span className="ml-1 text-slate-500">({t('mainTeacher.viewingAsTeacher')})</span>
+          )}
+          {' · '}
+          <Link to="/main-teacher/dashboard" className="text-blue-600 hover:text-blue-800">
+            {t('mainTeacher.changeClassOnDashboard') || 'Change class on Dashboard'}
+          </Link>
+        </p>
       )}
 
       <Card title="Add Grade">

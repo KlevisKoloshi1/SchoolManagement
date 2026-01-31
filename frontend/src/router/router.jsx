@@ -12,6 +12,7 @@ import AdminDashboard from '../pages/admin/AdminDashboard'
 import AdminTeachers from '../pages/admin/AdminTeachers'
 import AdminMainTeacherClassDetails from '../pages/admin/AdminMainTeacherClassDetails'
 
+import { MainTeacherClassProvider } from '../contexts/MainTeacherClassContext'
 import MainTeacherDashboard from '../pages/mainTeacher/MainTeacherDashboard'
 import MainTeacherStudents from '../pages/mainTeacher/MainTeacherStudents'
 import MainTeacherLessons from '../pages/mainTeacher/MainTeacherLessons'
@@ -58,7 +59,11 @@ export function makeRouter() {
       element: <ProtectedRoute allowedRoles={[ROLE.main_teacher]} />,
       children: [
         {
-          element: <DashboardLayout />,
+          element: (
+            <MainTeacherClassProvider>
+              <DashboardLayout />
+            </MainTeacherClassProvider>
+          ),
           children: [
             { path: '/main-teacher/dashboard', element: <MainTeacherDashboard /> },
             { path: '/main-teacher/students', element: <MainTeacherStudents /> },

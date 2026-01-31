@@ -94,7 +94,8 @@
     "justified": "Justified",
     "addNewTopic": "Add new topic",
     "absencesTitle": "Absences",
-    "gradesTitle": "Grades"
+    "gradesTitle": "Grades",
+    "changeClassOnDashboard": "Change class on Dashboard"
   },
   "teacher": {
     "selectSubject": "Select subject",

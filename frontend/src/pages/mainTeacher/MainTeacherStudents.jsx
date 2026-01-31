@@ -1,23 +1,19 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { getStudents, getClasses, addStudent, deleteStudent } from '../../api/mainTeacher'
+import { getStudents, addStudent, deleteStudent } from '../../api/mainTeacher'
 import { Alert, Button, Card, Input } from '../../components/ui'
-
-const STORAGE_CLASS_KEY = 'mainTeacher_currentClassId'
+import { useMainTeacherClass } from '../../contexts/MainTeacherClassContext'
 
 export default function MainTeacherStudents() {
   const { t } = useTranslation()
+  const { currentClassId } = useMainTeacherClass()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
 
-  const [classes, setClasses] = useState([])
   const [homeroomClass, setHomeroomClass] = useState(null)
   const [classInfo, setClassInfo] = useState(null)
   const [students, setStudents] = useState([])
-  const [currentClassId, setCurrentClassId] = useState(() => {
-    const stored = sessionStorage.getItem(STORAGE_CLASS_KEY)
-    return stored ? (Number(stored) || null) : null
-  })
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState(null)
 
@@ -30,11 +26,6 @@ export default function MainTeacherStudents() {
   const isViewingHomeroom = currentClassId == null || (homeroomClass && currentClassId === homeroomClass.id)
 
   useEffect(() => {
-    if (currentClassId != null) sessionStorage.setItem(STORAGE_CLASS_KEY, String(currentClassId))
-    else sessionStorage.removeItem(STORAGE_CLASS_KEY)
-  }, [currentClassId])
-
-  useEffect(() => {
     fetchCatalogAndStudents()
   }, [currentClassId])
 
@@ -42,14 +33,10 @@ export default function MainTeacherStudents() {
     try {
       setLoading(true)
       setFetchError(null)
-      const [studentsRes, classesRes] = await Promise.all([
-        getStudents(currentClassId ?? undefined),
-        getClasses(),
-      ])
+      const studentsRes = await getStudents(currentClassId ?? undefined)
       setHomeroomClass(studentsRes.homeroom_class || null)
       setClassInfo(studentsRes.class || null)
       setStudents(studentsRes.students || [])
-      setClasses(classesRes.classes || [])
     } catch (err) {
       setFetchError(err?.response?.data?.message || 'Failed to load.')
     } finally {
@@ -95,11 +82,6 @@ export default function MainTeacherStudents() {
     }
   }
 
-  function handleClassChange(e) {
-    const val = e.target.value
-    setCurrentClassId(val === '' ? null : Number(val))
-  }
-
   return (
     <div className="space-y-6">
       <div>
@@ -107,30 +89,18 @@ export default function MainTeacherStudents() {
         <div className="text-sm text-slate-600">{t('mainTeacher.studentsDescription')}</div>
       </div>
 
-      {/* Class switcher: only show when we have homeroom and classes */}
-      {homeroomClass && classes.length > 0 && (
-        <Card title={t('mainTeacher.currentClass')}>
-          <div className="flex flex-wrap items-center gap-2">
-            <label className="text-sm font-medium text-slate-700">{t('mainTeacher.viewClass')}</label>
-            <select
-              value={currentClassId ?? ''}
-              onChange={handleClassChange}
-              className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-            >
-              <option value="">{t('mainTeacher.myClass')} ({homeroomClass.name})</option>
-              {classes.filter((c) => c.id !== homeroomClass.id).map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            {!isViewingHomeroom && classInfo && (
-              <span className="text-sm text-slate-500">
-                {t('mainTeacher.viewingAsTeacher')} – {classInfo.name}
-              </span>
-            )}
-          </div>
-        </Card>
+      {/* Current class: set on Dashboard; change there to update all pages */}
+      {classInfo && (
+        <p className="text-sm text-slate-700">
+          {t('mainTeacher.yourClass')}: <strong>{classInfo.name}</strong>
+          {!isViewingHomeroom && (
+            <span className="ml-1 text-slate-500">({t('mainTeacher.viewingAsTeacher')})</span>
+          )}
+          {' · '}
+          <Link to="/main-teacher/dashboard" className="text-blue-600 hover:text-blue-800">
+            {t('mainTeacher.changeClassOnDashboard') || 'Change class on Dashboard'}
+          </Link>
+        </p>
       )}
 
       {classInfo && (

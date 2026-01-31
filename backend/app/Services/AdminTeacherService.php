@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\UserRole;
+use App\Models\LessonTopic;
 use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Models\Teacher;
@@ -63,6 +64,20 @@ class AdminTeacherService
             ];
         });
 
+        $lessonTopics = LessonTopic::query()
+            ->where('class_id', $class->id)
+            ->with('subject:id,name')
+            ->orderBy('date', 'desc')
+            ->orderBy('id')
+            ->get()
+            ->map(fn ($t) => [
+                'id' => $t->id,
+                'title' => $t->title,
+                'description' => $t->description,
+                'date' => $t->date?->toDateString(),
+                'subject' => $t->subject ? ['id' => $t->subject->id, 'name' => $t->subject->name] : null,
+            ]);
+
         return [
             'teacher' => [
                 'id' => $teacher->id,
@@ -79,6 +94,7 @@ class AdminTeacherService
                 'name' => $class->name,
             ],
             'students' => $students,
+            'lesson_topics' => $lessonTopics,
         ];
     }
 

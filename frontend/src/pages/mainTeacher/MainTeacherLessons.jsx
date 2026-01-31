@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
-import { getSubjects, getClasses, addLessonTopic } from '../../api/mainTeacher'
+import { Link } from 'react-router-dom'
+import { getSubjects, getStudents, addLessonTopic } from '../../api/mainTeacher'
 import { Alert, Button, Card, Input } from '../../components/ui'
+import { useMainTeacherClass } from '../../contexts/MainTeacherClassContext'
 
 export default function MainTeacherLessons() {
+  const { currentClassId } = useMainTeacherClass()
   const [subjects, setSubjects] = useState([])
-  const [classes, setClasses] = useState([])
+  const [classInfo, setClassInfo] = useState(null)
+  const [homeroomClass, setHomeroomClass] = useState(null)
   const [subjectId, setSubjectId] = useState('')
-  const [classId, setClassId] = useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [date, setDate] = useState('')
@@ -16,15 +19,18 @@ export default function MainTeacherLessons() {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
 
+  const isViewingHomeroom = currentClassId == null || (homeroomClass && currentClassId === homeroomClass.id)
+
   useEffect(() => {
-    Promise.all([getSubjects(), getClasses()])
-      .then(([subj, cls]) => {
+    Promise.all([getSubjects(), getStudents(currentClassId ?? undefined)])
+      .then(([subj, studentsRes]) => {
         setSubjects(subj.subjects || [])
-        setClasses(cls.classes || [])
+        setClassInfo(studentsRes.class || null)
+        setHomeroomClass(studentsRes.homeroom_class || null)
       })
       .catch(() => {})
       .finally(() => setLoadingCatalog(false))
-  }, [])
+  }, [currentClassId])
 
   async function onSubmit(e) {
     e.preventDefault()
@@ -38,11 +44,10 @@ export default function MainTeacherLessons() {
     try {
       const payload = { subject_id: Number(subjectId), title, date }
       if (description.trim()) payload.description = description.trim()
-      if (classId) payload.class_id = Number(classId)
+      if (currentClassId != null) payload.class_id = currentClassId
       await addLessonTopic(payload)
       setSuccess('Lesson topic added.')
       setSubjectId('')
-      setClassId('')
       setTitle('')
       setDescription('')
       setDate('')
@@ -58,9 +63,22 @@ export default function MainTeacherLessons() {
       <div>
         <div className="text-2xl font-semibold text-slate-900">Lessons</div>
         <div className="text-sm text-slate-600">
-          Add lesson topics. For your main class, only select subject. For another class, also select class.
+          Add lesson topics for the class selected on the Dashboard.
         </div>
       </div>
+
+      {classInfo && (
+        <p className="text-sm text-slate-700">
+          Class: <strong>{classInfo.name}</strong>
+          {!isViewingHomeroom && (
+            <span className="ml-1 text-slate-500">(viewing as teacher)</span>
+          )}
+          {' · '}
+          <Link to="/main-teacher/dashboard" className="text-blue-600 hover:text-blue-800">
+            Change class on Dashboard
+          </Link>
+        </p>
+      )}
 
       <Card title="Add Lesson Topic">
         <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-2">
@@ -90,23 +108,6 @@ export default function MainTeacherLessons() {
                 </option>
               ))}
             </select>
-          </div>
-
-          <div className="md:col-span-2">
-            <label className="mb-1 block text-sm font-medium text-slate-700">Other class (optional)</label>
-            <select
-              value={classId}
-              onChange={(e) => setClassId(e.target.value)}
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-            >
-              <option value="">My main class</option>
-              {classes.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            <p className="mt-1 text-xs text-slate-500">Leave as &quot;My main class&quot; for your homeroom class.</p>
           </div>
 
           <div className="md:col-span-2">

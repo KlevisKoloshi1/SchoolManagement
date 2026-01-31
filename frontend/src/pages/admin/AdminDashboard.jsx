@@ -18,6 +18,20 @@ export default function AdminDashboard() {
       description: t('admin.assignTeachers'),
       icon: '◆',
       color: 'from-accent/10 to-accent/5'
+    },
+    {
+      title: t('navigation.activities'),
+      description: t('admin.activitiesDescription'),
+      link: '/admin/activities',
+      icon: '◉',
+      color: 'from-emerald-500/10 to-emerald-500/5'
+    },
+    {
+      title: t('navigation.announcements'),
+      description: t('admin.announcementsDescription'),
+      link: '/admin/announcements',
+      icon: '◎',
+      color: 'from-amber-500/10 to-amber-500/5'
     }
   ]
 

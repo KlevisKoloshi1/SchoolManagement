@@ -30,7 +30,7 @@ export default function AdminTeachers() {
   useEffect(() => {
     getSubjects().then((d) => setSubjects(d.subjects || [])).catch(() => setSubjects([]))
     if (isMainTeacher) {
-      getClasses().then((d) => setClasses(d.classes || [])).catch(() => setClasses([]))
+      getClasses({ available_for_main_teacher: true }).then((d) => setClasses(d.classes || [])).catch(() => setClasses([]))
     } else {
       setClassId('')
       setSubjectId('')

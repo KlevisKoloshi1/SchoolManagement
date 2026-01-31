@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../auth/AuthContext'
 import { useNavForRole, roleHomePath } from '../router/roleNav'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { NotificationDropdown } from '../components/NotificationDropdown'
 import { Button } from '../components/ui'
 
 function NavItem({ to, label, icon }) {
@@ -136,8 +137,9 @@ export default function DashboardLayout() {
         </aside>
 
         <main className="flex-1 overflow-auto relative bg-background">
-          {/* Language Switcher positioned at top right */}
-          <div className="absolute top-6 right-6 z-10">
+          {/* Notifications + Language Switcher at top right */}
+          <div className="absolute top-6 right-6 z-10 flex items-center gap-2">
+            <NotificationDropdown />
             <LanguageSwitcher compact />
           </div>
           

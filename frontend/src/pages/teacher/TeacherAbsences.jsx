@@ -98,7 +98,7 @@ export default function TeacherAbsences() {
   }
 
   const subjectOptions = subjects.map(s => ({
-    value: s.id,
+    value: String(s.id),
     label: subjectLabel(t, s.name)
   }))
 
@@ -139,18 +139,27 @@ export default function TeacherAbsences() {
           )}
 
           <div className="grid gap-6 md:grid-cols-2">
-            <Select
-              label={t('teacher.selectSubject')}
-              value={subjectId}
-              onChange={(e) => { 
-                setSubjectId(e.target.value)
-                setLessonTopicId('')
-              }}
-              options={subjectOptions}
-              placeholder={t('teacher.selectSubject')}
-              required
-              disabled={!currentClassId}
-            />
+            {!loadingCatalog && subjects.length === 0 ? (
+              <div>
+                <div className="mb-2 text-sm font-medium text-text-primary">{t('teacher.selectSubject')}</div>
+                <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  {t('teacher.noSubjectsAssigned')}
+                </p>
+              </div>
+            ) : (
+              <Select
+                label={t('teacher.selectSubject')}
+                value={subjectId}
+                onChange={(e) => {
+                  setSubjectId(e.target.value)
+                  setLessonTopicId('')
+                }}
+                options={subjectOptions}
+                placeholder={t('teacher.selectSubject')}
+                required
+                disabled={!currentClassId}
+              />
+            )}
 
             <Select
               label={t('teacher.topic')}

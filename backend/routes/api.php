@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\AdminActivityController;
+use App\Http\Controllers\Admin\AdminAnnouncementController;
 use App\Http\Controllers\Admin\AdminCatalogController;
 use App\Http\Controllers\Admin\AdminTeacherController;
 use App\Http\Controllers\Admin\AssignmentController;
@@ -10,6 +12,7 @@ use App\Http\Controllers\MainTeacher\MainTeacherLessonTopicController;
 use App\Http\Controllers\MainTeacher\MainTeacherStudentController;
 use App\Http\Controllers\Student\StudentAbsenceController;
 use App\Http\Controllers\Student\StudentGradeController;
+use App\Http\Controllers\Student\StudentNotificationController;
 use App\Http\Controllers\Teacher\TeacherAbsenceController;
 use App\Http\Controllers\Teacher\TeacherCatalogController;
 use App\Http\Controllers\Teacher\TeacherGradeController;
@@ -31,6 +34,14 @@ Route::middleware('throttle:api')->group(function () {
             Route::get('/subjects', [AdminCatalogController::class, 'subjects']);
             Route::post('/assign-class', [AssignmentController::class, 'assignClass']);
             Route::post('/assign-subject', [AssignmentController::class, 'assignSubject']);
+            Route::get('/activities', [AdminActivityController::class, 'index']);
+            Route::post('/activities', [AdminActivityController::class, 'store']);
+            Route::put('/activities/{id}', [AdminActivityController::class, 'update']);
+            Route::delete('/activities/{id}', [AdminActivityController::class, 'destroy']);
+            Route::get('/announcements', [AdminAnnouncementController::class, 'index']);
+            Route::post('/announcements', [AdminAnnouncementController::class, 'store']);
+            Route::put('/announcements/{id}', [AdminAnnouncementController::class, 'update']);
+            Route::delete('/announcements/{id}', [AdminAnnouncementController::class, 'destroy']);
         });
 
         Route::prefix('main-teacher')->middleware('role:main_teacher')->group(function () {
@@ -43,6 +54,9 @@ Route::middleware('throttle:api')->group(function () {
             Route::post('/lesson-topics', [MainTeacherLessonTopicController::class, 'store']);
             Route::post('/absences', [MainTeacherAbsenceController::class, 'store']);
             Route::post('/grades', [MainTeacherGradeController::class, 'store']);
+            Route::get('/activities', [MainTeacherNotificationController::class, 'activities']);
+            Route::get('/announcements', [MainTeacherNotificationController::class, 'announcements']);
+            Route::get('/calendar', [MainTeacherNotificationController::class, 'calendar']);
         });
 
         Route::prefix('teacher')->middleware('role:teacher')->group(function () {
@@ -58,6 +72,9 @@ Route::middleware('throttle:api')->group(function () {
         Route::prefix('student')->middleware('role:student')->group(function () {
             Route::get('/grades', [StudentGradeController::class, 'index']);
             Route::get('/absences', [StudentAbsenceController::class, 'index']);
+            Route::get('/activities', [StudentNotificationController::class, 'activities']);
+            Route::get('/announcements', [StudentNotificationController::class, 'announcements']);
+            Route::get('/calendar', [StudentNotificationController::class, 'calendar']);
         });
     });
 });

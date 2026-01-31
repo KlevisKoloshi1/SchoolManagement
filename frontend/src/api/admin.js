@@ -5,8 +5,11 @@ export async function getTeachers() {
   return data
 }
 
-export async function getClasses() {
-  const { data } = await apiClient.get('/admin/classes')
+/**
+ * @param {{ available_for_main_teacher?: boolean }} [params] - If true, returns only classes without a main teacher (for add main teacher form).
+ */
+export async function getClasses(params) {
+  const { data } = await apiClient.get('/admin/classes', { params: params ?? {} })
   return data
 }
 
@@ -50,6 +53,72 @@ export async function assignSubject({ teacher_id, subject_id }) {
     teacher_id,
     subject_id,
   })
+  return data
+}
+
+export async function getActivities() {
+  const { data } = await apiClient.get('/admin/activities')
+  return data
+}
+
+export async function createActivity({ name, date, description, for_all_classes, class_ids }) {
+  const { data } = await apiClient.post('/admin/activities', {
+    name,
+    date,
+    description: description || null,
+    for_all_classes: !!for_all_classes,
+    class_ids: for_all_classes ? [] : (class_ids || []),
+  })
+  return data
+}
+
+export async function updateActivity(id, { name, date, description, for_all_classes, class_ids }) {
+  const { data } = await apiClient.put(`/admin/activities/${id}`, {
+    name,
+    date,
+    description: description || null,
+    for_all_classes: !!for_all_classes,
+    class_ids: for_all_classes ? [] : (class_ids || []),
+  })
+  return data
+}
+
+export async function deleteActivity(id) {
+  const { data } = await apiClient.delete(`/admin/activities/${id}`)
+  return data
+}
+
+export async function getAnnouncements() {
+  const { data } = await apiClient.get('/admin/announcements')
+  return data
+}
+
+export async function createAnnouncement({ type, title, message, subject_id, for_all_classes, class_ids }) {
+  const { data } = await apiClient.post('/admin/announcements', {
+    type,
+    title,
+    message,
+    subject_id: subject_id || null,
+    for_all_classes: !!for_all_classes,
+    class_ids: for_all_classes ? [] : (class_ids || []),
+  })
+  return data
+}
+
+export async function updateAnnouncement(id, { type, title, message, subject_id, for_all_classes, class_ids }) {
+  const { data } = await apiClient.put(`/admin/announcements/${id}`, {
+    type,
+    title,
+    message,
+    subject_id: subject_id || null,
+    for_all_classes: !!for_all_classes,
+    class_ids: for_all_classes ? [] : (class_ids || []),
+  })
+  return data
+}
+
+export async function deleteAnnouncement(id) {
+  const { data } = await apiClient.delete(`/admin/announcements/${id}`)
   return data
 }
 

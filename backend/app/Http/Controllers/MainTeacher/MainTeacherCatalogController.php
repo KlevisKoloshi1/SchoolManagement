@@ -4,7 +4,6 @@ namespace App\Http\Controllers\MainTeacher;
 
 use App\Http\Controllers\Controller;
 use App\Models\SchoolClass;
-use App\Models\Subject;
 use App\Services\TeacherContextService;
 use Illuminate\Http\Request;
 
@@ -15,13 +14,13 @@ class MainTeacherCatalogController extends Controller
     }
 
     /**
-     * Return all subjects so main teachers can select any subject (including their assigned one)
-     * when recording lessons, absences, and grades for their class or when viewing another class.
+     * Return only the subjects assigned to this main teacher by the admin
+     * (so they can record lessons, absences, and grades only for their subject).
      */
     public function subjects(Request $request)
     {
-        $this->teacherContext->getTeacherOrFail($request->user());
-        $subjects = Subject::query()->orderBy('name')->get(['id', 'name']);
+        $teacher = $this->teacherContext->getTeacherOrFail($request->user());
+        $subjects = $teacher->subjects()->orderBy('name')->get(['id', 'name']);
         return response()->json(['subjects' => $subjects]);
     }
 

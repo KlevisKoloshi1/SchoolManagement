@@ -8,9 +8,13 @@ use App\Models\Subject;
 
 class AdminCatalogController extends Controller
 {
-    public function classes()
+    public function classes(\Illuminate\Http\Request $request)
     {
-        $classes = SchoolClass::query()->orderBy('name')->get(['id', 'name']);
+        $query = SchoolClass::query()->orderBy('name');
+        if ($request->boolean('available_for_main_teacher')) {
+            $query->whereNull('main_teacher_id');
+        }
+        $classes = $query->get(['id', 'name']);
         return response()->json(['classes' => $classes]);
     }
 

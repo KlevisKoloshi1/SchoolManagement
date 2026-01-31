@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { getSubjects, getStudents, getLessonTopics, addLessonTopic } from '../../api/mainTeacher'
 import { Alert, Button, Card, Input } from '../../components/ui'
 import { useMainTeacherClass } from '../../contexts/MainTeacherClassContext'
 
 export default function MainTeacherLessons() {
+  const { t } = useTranslation()
   const { currentClassId } = useMainTeacherClass()
   const [subjects, setSubjects] = useState([])
   const [topics, setTopics] = useState([])
@@ -115,20 +117,27 @@ export default function MainTeacherLessons() {
           ) : null}
 
           <div className="md:col-span-2">
-            <label className="mb-1 block text-sm font-medium text-slate-700">Subject</label>
-            <select
-              value={subjectId}
-              onChange={(e) => setSubjectId(e.target.value)}
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-              required
-            >
-              <option value="">Select subject</option>
-              {subjects.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
+            <label className="mb-1 block text-sm font-medium text-slate-700">{t('mainTeacher.selectSubject')}</label>
+            {!loadingCatalog && subjects.length === 0 ? (
+              <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                {t('mainTeacher.noSubjectsAssigned')}
+              </p>
+            ) : (
+              <select
+                value={subjectId}
+                onChange={(e) => setSubjectId(e.target.value)}
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                required
+                disabled={subjects.length === 0}
+              >
+                <option value="">{t('mainTeacher.selectSubject')}</option>
+                {subjects.map((s) => (
+                  <option key={s.id} value={String(s.id)}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div className="md:col-span-2">

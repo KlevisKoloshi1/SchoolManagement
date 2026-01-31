@@ -47,7 +47,11 @@
     "grades": "Notat",
     "reports": "Raportet",
     "settings": "Cilësimet",
-    "profile": "Profili"
+    "profile": "Profili",
+    "activities": "Aktivitetet",
+    "announcements": "Njoftimet",
+    "calendar": "Kalendari",
+    "notifications": "Njoftimet"
   },
   "errors": {
     "pageNotFound": "Faqja Nuk u Gjet",
@@ -66,7 +70,46 @@
     "createTeachers": "Krijo mësues kryesorë ose mësues dhe shfaq kredencialet e gjeneruara.",
     "assignments": "Detyrat",
     "assignTeachers": "Cakto mësuesin kryesor në klasë dhe lëndët tek mësuesit.",
-    "comprehensiveTools": "Menaxho mësuesit, klasat dhe lëndët me mjete të plota administrative."
+    "comprehensiveTools": "Menaxho mësuesit, klasat dhe lëndët me mjete të plota administrative.",
+    "activitiesDescription": "Krijo aktivitete shkolle (p.sh. Dita e verës, Dita e teknologjisë) dhe zgjidh cilat klasa i shohin.",
+    "announcementsDescription": "Njofto mësuesit kryesorë dhe nxënësit për lënda të anuluara ose të shtyra."
+  },
+  "notifications": {
+    "addActivity": "Shto Aktivitet",
+    "activityName": "Emri i aktivitetit",
+    "activityNamePlaceholder": "p.sh. Dita e verës, Dita e teknologjisë",
+    "activityDate": "Data",
+    "activityDateRequired": "Data kërkohet.",
+    "activityNameRequired": "Emri i aktivitetit kërkohet.",
+    "description": "Përshkrimi",
+    "descriptionPlaceholder": "Përshkrim opsional",
+    "allClassrooms": "Të gjitha klasat",
+    "selectClassrooms": "Zgjidhni klasat",
+    "selectAtLeastOneClass": "Zgjidhni të paktën një klasë ose zgjidhni Të gjitha klasat.",
+    "createActivity": "Krijo aktivitetin",
+    "activityCreated": "Aktiviteti u krijua.",
+    "activitiesList": "Aktivitetet",
+    "noActivities": "Ende nuk ka aktivitete.",
+    "confirmDeleteActivity": "Fshi aktivitetin \"{{name}}\"?",
+    "addAnnouncement": "Shto Njoftim",
+    "type": "Lloji",
+    "typeCancelled": "Anuluar (lënda nuk do të mbahet)",
+    "typePostponed": "Shtyrë (p.sh. pas 2 javësh në këtë orar)",
+    "announcementTitle": "Titulli",
+    "announcementTitlePlaceholder": "Titull i shkurtër",
+    "announcementTitleRequired": "Titulli kërkohet.",
+    "message": "Mesazhi",
+    "messagePlaceholder": "Detaje për mësuesit kryesorë dhe nxënësit",
+    "announcementMessageRequired": "Mesazhi kërkohet.",
+    "subjectOptional": "Lënda (opsional)",
+    "sendAnnouncement": "Dërgo njoftimin",
+    "announcementCreated": "Njoftimi u dërgua.",
+    "announcementsList": "Njoftimet",
+    "noAnnouncements": "Ende nuk ka njoftime.",
+    "confirmDeleteAnnouncement": "Fshi njoftimin \"{{name}}\"?",
+    "noNotifications": "Nuk ka njoftime të reja.",
+    "activities": "Aktivitetet",
+    "announcements": "Njoftimet"
   },
   "mainTeacher": {
     "dashboard": "Paneli i Mësuesit Kryesor",
@@ -114,7 +157,8 @@
     "recentStudents": "Nxënësit e fundit",
     "viewAllStudents": "Shiko të gjithë nxënësit",
     "sameInterface": "E njëjta ndërfaqe si një mësues i rregullt (shiko dhe shto regjistra vetëm).",
-    "homeroomClass": "Klasa juaj kryesore. Mund të shtoni nxënës dhe të menaxhoni regjistra këtu."
+    "homeroomClass": "Klasa juaj kryesore. Mund të shtoni nxënës dhe të menaxhoni regjistra këtu.",
+    "noSubjectsAssigned": "Nuk ju është caktuar lënda. Kërkojini administratorit t'ju caktojë lëndën."
   },
   "teacher": {
     "dashboard": "Paneli i Mësuesit",
@@ -135,7 +179,8 @@
     "lessons": "Mësimet",
     "addLessonTopics": "Shto temat e mësimeve për lëndët tuaja.",
     "records": "Regjistra",
-    "addAbsencesGrades": "Shto mungesat dhe notat."
+    "addAbsencesGrades": "Shto mungesat dhe notat.",
+    "noSubjectsAssigned": "Nuk ju janë caktuar lënda. Kërkojini administratorit t'ju caktojë lëndët."
   },
   "student": {
     "dashboard": "Paneli i Nxënësit",

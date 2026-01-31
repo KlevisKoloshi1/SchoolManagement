@@ -130,17 +130,24 @@ export default function MainTeacherGrades() {
 
           <div className="md:col-span-2">
             <label className="mb-1 block text-sm font-medium text-slate-700">{t('mainTeacher.selectSubject')}</label>
-            <select
-              value={subjectId}
-              onChange={(e) => { setSubjectId(e.target.value); setLessonTopicId('') }}
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-              required
-            >
-              <option value="">{t('mainTeacher.selectSubject')}</option>
-              {subjects.map((s) => (
-                <option key={s.id} value={s.id}>{subjectLabel(t, s.name)}</option>
-              ))}
-            </select>
+            {!loadingCatalog && subjects.length === 0 ? (
+              <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                {t('mainTeacher.noSubjectsAssigned')}
+              </p>
+            ) : (
+              <select
+                value={subjectId}
+                onChange={(e) => { setSubjectId(e.target.value); setLessonTopicId('') }}
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                required
+                disabled={subjects.length === 0}
+              >
+                <option value="">{t('mainTeacher.selectSubject')}</option>
+                {subjects.map((s) => (
+                  <option key={s.id} value={String(s.id)}>{subjectLabel(t, s.name)}</option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div className="md:col-span-2">

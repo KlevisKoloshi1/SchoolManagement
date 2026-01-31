@@ -59,3 +59,24 @@ export async function deleteStudent(studentId) {
   return data
 }
 
+export async function getActivities(classId = null) {
+  const params = classId != null ? { class_id: classId } : {}
+  const { data } = await apiClient.get('/main-teacher/activities', { params })
+  return data
+}
+
+export async function getAnnouncements(classId = null) {
+  const params = classId != null ? { class_id: classId } : {}
+  const { data } = await apiClient.get('/main-teacher/announcements', { params })
+  return data
+}
+
+export async function getCalendar(from, to, classId = null) {
+  const params = {}
+  if (from) params.from = from
+  if (to) params.to = to
+  if (classId != null) params.class_id = classId
+  const { data } = await apiClient.get('/main-teacher/calendar', { params })
+  return data
+}
+

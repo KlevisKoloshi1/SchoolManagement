@@ -47,7 +47,11 @@
     "grades": "Grades",
     "reports": "Reports",
     "settings": "Settings",
-    "profile": "Profile"
+    "profile": "Profile",
+    "activities": "Activities",
+    "announcements": "Announcements",
+    "calendar": "Calendar",
+    "notifications": "Notifications"
   },
   "errors": {
     "pageNotFound": "Page Not Found",
@@ -66,7 +70,46 @@
     "createTeachers": "Create main teachers or teachers and show generated credentials.",
     "assignments": "Assignments",
     "assignTeachers": "Assign main teacher to class and subjects to teachers.",
-    "comprehensiveTools": "Manage teachers, classes, and subjects with comprehensive administrative tools."
+    "comprehensiveTools": "Manage teachers, classes, and subjects with comprehensive administrative tools.",
+    "activitiesDescription": "Create school activities (e.g. Summer day, Day of technology) and choose which classrooms see them.",
+    "announcementsDescription": "Notify main teachers and students about cancelled or postponed subjects."
+  },
+  "notifications": {
+    "addActivity": "Add Activity",
+    "activityName": "Activity name",
+    "activityNamePlaceholder": "e.g. Summer day, Day of technology",
+    "activityDate": "Date",
+    "activityDateRequired": "Date is required.",
+    "activityNameRequired": "Activity name is required.",
+    "description": "Description",
+    "descriptionPlaceholder": "Optional description",
+    "allClassrooms": "All classrooms",
+    "selectClassrooms": "Select classrooms",
+    "selectAtLeastOneClass": "Select at least one classroom or choose All classrooms.",
+    "createActivity": "Create activity",
+    "activityCreated": "Activity created.",
+    "activitiesList": "Activities",
+    "noActivities": "No activities yet.",
+    "confirmDeleteActivity": "Delete activity \"{{name}}\"?",
+    "addAnnouncement": "Add Announcement",
+    "type": "Type",
+    "typeCancelled": "Cancelled (subject will not take place)",
+    "typePostponed": "Postponed (e.g. after 2 weeks at this hour)",
+    "announcementTitle": "Title",
+    "announcementTitlePlaceholder": "Short title",
+    "announcementTitleRequired": "Title is required.",
+    "message": "Message",
+    "messagePlaceholder": "Details for main teachers and students",
+    "announcementMessageRequired": "Message is required.",
+    "subjectOptional": "Subject (optional)",
+    "sendAnnouncement": "Send announcement",
+    "announcementCreated": "Announcement sent.",
+    "announcementsList": "Announcements",
+    "noAnnouncements": "No announcements yet.",
+    "confirmDeleteAnnouncement": "Delete announcement \"{{name}}\"?",
+    "noNotifications": "No new notifications.",
+    "activities": "Activities",
+    "announcements": "Announcements"
   },
   "mainTeacher": {
     "dashboard": "Main Teacher Dashboard",
@@ -114,7 +157,8 @@
     "recentStudents": "Recent students",
     "viewAllStudents": "View all",
     "sameInterface": "Same interface as a regular teacher (view and add records only).",
-    "homeroomClass": "Your homeroom class. You can add students and manage records here."
+    "homeroomClass": "Your homeroom class. You can add students and manage records here.",
+    "noSubjectsAssigned": "No subjects assigned to you. Ask the admin to assign your subject."
   },
   "teacher": {
     "dashboard": "Teacher Dashboard",
@@ -135,7 +179,8 @@
     "lessons": "Lessons",
     "addLessonTopics": "Add lesson topics for your subjects.",
     "records": "Records",
-    "addAbsencesGrades": "Add absences and grades."
+    "addAbsencesGrades": "Add absences and grades.",
+    "noSubjectsAssigned": "No subjects assigned to you. Ask the admin to assign your subjects."
   },
   "student": {
     "dashboard": "Student Dashboard",

@@ -45,12 +45,29 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function signIn({ login, password }) {
-    const data = await authApi.login({ login, password })
-    const next = { token: data.token, user: data.user }
-    writeSession(next)
-    setToken(next.token)
-    setUser(next.user)
-    return next.user
+    try {
+      const data = await authApi.login({ login, password })
+      
+      // Validate the response structure
+      if (!data || !data.token || !data.user || !data.user.role) {
+        throw new Error('Invalid login response from server')
+      }
+      
+      const next = { token: data.token, user: data.user }
+      writeSession(next)
+      setToken(next.token)
+      setUser(next.user)
+      
+      console.log('Login successful:', { role: data.user.role, user: data.user.name })
+      return next.user
+    } catch (error) {
+      console.error('Login error:', error)
+      // Clear any partial state
+      writeSession(null)
+      setToken(null)
+      setUser(null)
+      throw error
+    }
   }
 
   async function signOut() {

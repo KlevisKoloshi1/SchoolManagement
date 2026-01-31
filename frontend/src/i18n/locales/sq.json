@@ -60,7 +60,16 @@
     "schoolManagement": "Menaxhimi i Shkollës",
     "schoolManagementSystem": "Sistemi i Menaxhimit të Shkollës"
   },
+  "admin": {
+    "dashboard": "Paneli i Administratorit",
+    "manageTeachers": "Menaxho Mësuesit",
+    "createTeachers": "Krijo mësues kryesorë ose mësues dhe shfaq kredencialet e gjeneruara.",
+    "assignments": "Detyrat",
+    "assignTeachers": "Cakto mësuesin kryesor në klasë dhe lëndët tek mësuesit.",
+    "comprehensiveTools": "Menaxho mësuesit, klasat dhe lëndët me mjete të plota administrative."
+  },
   "mainTeacher": {
+    "dashboard": "Paneli i Mësuesit Kryesor",
     "currentClass": "Klasa aktuale",
     "viewClass": "Shiko klasën",
     "myClass": "Klasa ime",
@@ -95,9 +104,20 @@
     "addNewTopic": "Shto temë të re",
     "absencesTitle": "Mungesat",
     "gradesTitle": "Notat",
-    "changeClassOnDashboard": "Ndrysho klasën në Panelin kryesor"
+    "changeClassOnDashboard": "Ndrysho klasën në Panelin kryesor",
+    "manageClass": "Menaxho klasën tuaj të caktuar dhe nxënësit me mjete të plota.",
+    "addViewStudents": "Shto dhe shiko nxënësit në klasën tuaj.",
+    "viewStudents": "Shiko nxënësit në këtë klasë.",
+    "records": "Regjistrat",
+    "addLessonTopics": "Shto temat e mësimeve, mungesat dhe notat.",
+    "lessons": "Mësimet",
+    "recentStudents": "Nxënësit e fundit",
+    "viewAllStudents": "Shiko të gjithë nxënësit",
+    "sameInterface": "E njëjta ndërfaqe si një mësues i rregullt (shiko dhe shto regjistra vetëm).",
+    "homeroomClass": "Klasa juaj kryesore. Mund të shtoni nxënës dhe të menaxhoni regjistra këtu."
   },
   "teacher": {
+    "dashboard": "Paneli i Mësuesit",
     "selectSubject": "Zgjidhni lëndën",
     "selectClass": "Zgjidhni klasën",
     "selectStudent": "Zgjidhni nxënësin",
@@ -107,9 +127,15 @@
     "topic": "Tema",
     "date": "Data",
     "justified": "Justifikuar",
-    "addNewTopic": "Shto temë të re"
+    "addNewTopic": "Shto temë të re",
+    "manageSubjects": "Menaxho lëndët tuaja të caktuara, mësimet dhe regjistra e nxënësve.",
+    "lessons": "Mësimet",
+    "addLessonTopics": "Shto temat e mësimeve për lëndët tuaja.",
+    "records": "Regjistra",
+    "addAbsencesGrades": "Shto mungesat dhe notat."
   },
   "student": {
+    "dashboard": "Paneli i Nxënësit",
     "absencesTitle": "Mungesat",
     "absencesDescription": "Mungesat tuaja (lënda dhe tema).",
     "gradesTitle": "Notat",
@@ -120,7 +146,10 @@
     "grade": "Nota",
     "justified": "Justifikuar",
     "noAbsences": "Nuk u gjetën mungesa.",
-    "noGrades": "Nuk u gjetën nota."
+    "noGrades": "Nuk u gjetën nota.",
+    "readOnlyAccess": "Qasje vetëm për lexim në regjistra tuaj akademikë dhe të dhënat e performancës.",
+    "perfectAttendance": "Keni një rekord të përsosur të pranisë!",
+    "noGradesRecorded": "Ende nuk janë regjistruar nota."
   },
   "subjects": {
     "Mathematics": "Matematikë",
@@ -140,5 +169,11 @@
     "Economics": "Ekonomi",
     "Physics": "Fizikë",
     "Career Counseling": "Këshillim Karriere"
+  },
+  "roles": {
+    "Administrator": "Administrator",
+    "Main Teacher": "Mësues Kryesor",
+    "Teacher": "Mësues",
+    "Student": "Nxënës"
   }
 }

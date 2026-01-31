@@ -3,18 +3,22 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../auth/AuthContext'
 import { navForRole, roleHomePath } from '../router/roleNav'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { Button } from '../components/ui'
 
-function NavItem({ to, label }) {
+function NavItem({ to, label, icon }) {
   return (
     <NavLink
       to={to}
       className={({ isActive }) =>
         [
-          'block rounded-md px-3 py-2 text-sm font-medium',
-          isActive ? 'bg-primary text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100',
+          'flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200',
+          isActive 
+            ? 'bg-primary text-white shadow-soft transform scale-[1.02]' 
+            : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary hover:scale-[1.01]',
         ].join(' ')
       }
     >
+      {icon && <span className="text-lg">{icon}</span>}
       {label}
     </NavLink>
   )
@@ -25,51 +29,119 @@ export default function DashboardLayout() {
   const { user, role, signOut } = useAuth()
   const nav = navForRole(role)
 
+  // Add icons to navigation items
+  const getNavIcon = (path) => {
+    if (path.includes('dashboard')) return '■'
+    if (path.includes('students')) return '●'
+    if (path.includes('teachers')) return '▲'
+    if (path.includes('classes')) return '◆'
+    if (path.includes('subjects')) return '▼'
+    if (path.includes('grades')) return '◗'
+    if (path.includes('absences')) return '◐'
+    if (path.includes('lessons')) return '◑'
+    if (path.includes('reports')) return '◒'
+    if (path.includes('settings')) return '◓'
+    return '○'
+  }
+
+  const getRoleIcon = (role) => {
+    switch (role) {
+      case 'admin': return '●'
+      case 'main_teacher': return '▲'
+      case 'teacher': return '◆'
+      case 'student': return '○'
+      default: return '◐'
+    }
+  }
+
+  const getRoleLabel = (role) => {
+    switch (role) {
+      case 'admin': return t('roles.Administrator')
+      case 'main_teacher': return t('roles.Main Teacher')
+      case 'teacher': return t('roles.Teacher')
+      case 'student': return t('roles.Student')
+      default: return role
+    }
+  }
+
   return (
-    <div className="h-full">
+    <div className="h-full bg-background">
       <div className="flex h-full">
-        <aside className="w-64 border-r border-slate-200 bg-white">
-          <div className="flex items-center px-4 py-4">
-            <div>
-              <div className="text-sm font-semibold text-slate-900">{t('school.schoolManagement')}</div>
-              <div className="text-xs text-slate-500">{t('common.role')}: {role || '—'}</div>
+        <aside className="w-72 border-r border-border bg-surface shadow-soft flex flex-col">
+          {/* Header */}
+          <div className="border-b border-border p-6 flex-shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-xl">
+                ■
+              </div>
+              <div>
+                <div className="text-lg font-bold text-text-primary">
+                  {t('school.schoolManagement')}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-text-secondary">
+                  <span>{getRoleIcon(role)}</span>
+                  <span>{getRoleLabel(role)}</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="px-2">
+          {/* Navigation - Scrollable */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
             {nav.map((item) => (
-              <NavItem key={item.to} to={item.to} label={item.label} />
+              <NavItem 
+                key={item.to} 
+                to={item.to} 
+                label={item.label}
+                icon={getNavIcon(item.to)}
+              />
             ))}
           </div>
 
-          <div className="mt-4 border-t border-slate-200 px-4 py-4">
-            <div className="text-xs text-slate-500">{t('auth.signedInAs')}</div>
-            <div className="text-sm font-medium text-slate-900">{user?.name}</div>
-            <div className="text-xs text-slate-600">{user?.email || user?.username}</div>
-            <div className="mt-3 flex gap-2">
-              <a
-                href={roleHomePath(role)}
-                className="rounded-md border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/15"
+          {/* User section - Always at bottom */}
+          <div className="border-t border-border bg-surface p-4 flex-shrink-0">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                {user?.name?.charAt(0)?.toUpperCase() || '?'}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-semibold text-text-primary truncate">
+                  {user?.name}
+                </div>
+                <div className="text-xs text-text-secondary truncate">
+                  {user?.email || user?.username}
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => window.location.href = roleHomePath(role)}
+                className="flex-1"
               >
                 {t('navigation.dashboard')}
-              </a>
-              <button
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
                 onClick={signOut}
-                className="rounded-md bg-primary px-3 py-2 text-xs font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="flex-1"
               >
                 {t('common.logout')}
-              </button>
+              </Button>
             </div>
           </div>
         </aside>
 
-        <main className="flex-1 overflow-auto relative">
+        <main className="flex-1 overflow-auto relative bg-background">
           {/* Language Switcher positioned at top right */}
-          <div className="absolute top-4 right-6 z-10">
+          <div className="absolute top-6 right-6 z-10">
             <LanguageSwitcher compact />
           </div>
           
-          <div className="mx-auto max-w-6xl p-6">
+          <div className="mx-auto max-w-7xl p-6 pb-20">
             <Outlet />
           </div>
         </main>

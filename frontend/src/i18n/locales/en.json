@@ -60,7 +60,16 @@
     "schoolManagement": "School Management",
     "schoolManagementSystem": "School Management System"
   },
+  "admin": {
+    "dashboard": "Admin Dashboard",
+    "manageTeachers": "Manage Teachers",
+    "createTeachers": "Create main teachers or teachers and show generated credentials.",
+    "assignments": "Assignments",
+    "assignTeachers": "Assign main teacher to class and subjects to teachers.",
+    "comprehensiveTools": "Manage teachers, classes, and subjects with comprehensive administrative tools."
+  },
   "mainTeacher": {
+    "dashboard": "Main Teacher Dashboard",
     "currentClass": "Current class",
     "viewClass": "View class",
     "myClass": "My class",
@@ -95,9 +104,20 @@
     "addNewTopic": "Add new topic",
     "absencesTitle": "Absences",
     "gradesTitle": "Grades",
-    "changeClassOnDashboard": "Change class on Dashboard"
+    "changeClassOnDashboard": "Change class on Dashboard",
+    "manageClass": "Manage your assigned class and students with comprehensive tools.",
+    "addViewStudents": "Add and view students in your class.",
+    "viewStudents": "View students in this class.",
+    "records": "Records",
+    "addLessonTopics": "Add lesson topics, absences, and grades.",
+    "lessons": "Lessons",
+    "recentStudents": "Recent students",
+    "viewAllStudents": "View all",
+    "sameInterface": "Same interface as a regular teacher (view and add records only).",
+    "homeroomClass": "Your homeroom class. You can add students and manage records here."
   },
   "teacher": {
+    "dashboard": "Teacher Dashboard",
     "selectSubject": "Select subject",
     "selectClass": "Select class",
     "selectStudent": "Select student",
@@ -107,9 +127,15 @@
     "topic": "Topic",
     "date": "Date",
     "justified": "Justified",
-    "addNewTopic": "Add new topic"
+    "addNewTopic": "Add new topic",
+    "manageSubjects": "Manage your assigned subjects, lessons, and student records.",
+    "lessons": "Lessons",
+    "addLessonTopics": "Add lesson topics for your subjects.",
+    "records": "Records",
+    "addAbsencesGrades": "Add absences and grades."
   },
   "student": {
+    "dashboard": "Student Dashboard",
     "absencesTitle": "Absences",
     "absencesDescription": "Your absences (subject and topic).",
     "gradesTitle": "Grades",
@@ -120,7 +146,10 @@
     "grade": "Grade",
     "justified": "Justified",
     "noAbsences": "No absences found.",
-    "noGrades": "No grades found."
+    "noGrades": "No grades found.",
+    "readOnlyAccess": "Read-only access to your academic records and performance data.",
+    "perfectAttendance": "You have a perfect attendance record!",
+    "noGradesRecorded": "No grades have been recorded yet."
   },
   "subjects": {
     "Mathematics": "Mathematics",
@@ -140,5 +169,11 @@
     "Economics": "Economics",
     "Physics": "Physics",
     "Career Counseling": "Career Counseling"
+  },
+  "roles": {
+    "Administrator": "Administrator",
+    "Main Teacher": "Main Teacher",
+    "Teacher": "Teacher",
+    "Student": "Student"
   }
 }

@@ -10,6 +10,49 @@ body,
 }
 
 body {
-  @apply bg-background text-gray-900 antialiased;
+  @apply bg-background text-primary antialiased;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-border-light;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-secondary;
+}
+
+/* Focus styles */
+*:focus {
+  outline: none;
+}
+
+/* Selection styles */
+::selection {
+  @apply bg-primary/20 text-primary;
+}
+
+/* Custom checkbox styles */
+input[type="checkbox"] {
+  @apply rounded border-border text-primary focus:ring-primary/20 focus:ring-2 focus:ring-offset-0;
+}
+
+/* Custom date input styles */
+input[type="date"] {
+  @apply text-primary;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  @apply text-muted cursor-pointer;
 }
 

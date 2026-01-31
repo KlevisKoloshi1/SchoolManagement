@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getSubjects, getClasses, getClassStudents, getLessonTopics, addAbsence } from '../../api/teacher'
-import { Alert, Button, Card, Input } from '../../components/ui'
+import { Alert, Button, Card, Input, Select } from '../../components/ui'
 
 function subjectLabel(t, name) {
   if (!name) return ''
@@ -75,7 +75,7 @@ export default function TeacherAbsences() {
     if (!subjectId) return setError(t('teacher.selectSubject'))
     if (!classId) return setError(t('teacher.selectClass'))
     if (!studentId) return setError(t('teacher.selectStudent'))
-    if (!date.trim()) return setError(t('teacher.date') + ' required')
+    if (!date.trim()) return setError(t('teacher.date') + ' ' + t('common.required'))
 
     setSubmitting(true)
     try {
@@ -86,7 +86,7 @@ export default function TeacherAbsences() {
         date,
         justified,
       })
-      setSuccess(t('teacher.recordAbsence') + ' – OK')
+      setSuccess(t('teacher.recordAbsence') + ' – ' + t('common.success'))
       setStudentId('')
       setSubjectId('')
       setLessonTopicId('')
@@ -100,86 +100,122 @@ export default function TeacherAbsences() {
     }
   }
 
+  const subjectOptions = subjects.map(s => ({
+    value: s.id,
+    label: subjectLabel(t, s.name)
+  }))
+
+  const classOptions = classes.map(c => ({
+    value: c.id,
+    label: c.name
+  }))
+
+  const studentOptions = students.map(s => ({
+    value: s.id,
+    label: `${s.user.name} – ${s.user.email}`
+  }))
+
+  const topicOptions = topics.map(tpc => ({
+    value: tpc.id,
+    label: `${tpc.title} (${tpc.date})`
+  }))
+
   return (
-    <div className="space-y-6">
-      <div>
-        <div className="text-2xl font-semibold text-slate-900">Absences</div>
-        <div className="text-sm text-slate-600">
+    <div className="space-y-8 animate-fade-in">
+      <div className="text-center sm:text-left">
+        <div className="text-3xl font-bold text-text-primary mb-2">
+          {t('mainTeacher.absencesTitle')}
+        </div>
+        <div className="text-text-secondary max-w-2xl">
           Record absences by subject, topic and date. Select subject, class, topic, then student.
         </div>
       </div>
 
-      <Card title="Add Absence">
-        <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-2">
-          {error ? <div className="md:col-span-2"><Alert kind="error">{error}</Alert></div> : null}
-          {success ? <div className="md:col-span-2"><Alert kind="success">{success}</Alert></div> : null}
+      <Card title={t('teacher.recordAbsence')} className="max-w-4xl">
+        <form onSubmit={onSubmit} className="space-y-6">
+          {error && (
+            <Alert kind="error">{error}</Alert>
+          )}
+          {success && (
+            <Alert kind="success">{success}</Alert>
+          )}
 
-          <div className="md:col-span-2">
-            <label className="mb-1 block text-sm font-medium text-slate-700">{t('teacher.selectSubject')}</label>
-            <select
+          <div className="grid gap-6 md:grid-cols-2">
+            <Select
+              label={t('teacher.selectSubject')}
               value={subjectId}
-              onChange={(e) => { setSubjectId(e.target.value); setLessonTopicId('') }}
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              onChange={(e) => { 
+                setSubjectId(e.target.value)
+                setLessonTopicId('')
+              }}
+              options={subjectOptions}
+              placeholder={t('teacher.selectSubject')}
               required
-            >
-              <option value="">{t('teacher.selectSubject')}</option>
-              {subjects.map((s) => (
-                <option key={s.id} value={s.id}>{subjectLabel(t, s.name)}</option>
-              ))}
-            </select>
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-1 block text-sm font-medium text-slate-700">{t('teacher.selectClass')}</label>
-            <select
+            />
+
+            <Select
+              label={t('teacher.selectClass')}
               value={classId}
               onChange={(e) => setClassId(e.target.value)}
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              options={classOptions}
+              placeholder={t('teacher.selectClass')}
               required
-            >
-              <option value="">{t('teacher.selectClass')}</option>
-              {classes.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-1 block text-sm font-medium text-slate-700">{t('teacher.topic')}</label>
-            <select
+            />
+
+            <Select
+              label={t('teacher.topic')}
               value={lessonTopicId}
               onChange={(e) => setLessonTopicId(e.target.value)}
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              options={topicOptions}
+              placeholder={t('teacher.selectTopic')}
               disabled={!subjectId || !classId || loadingTopics}
-            >
-              <option value="">{t('teacher.selectTopic')}</option>
-              {topics.map((tpc) => (
-                <option key={tpc.id} value={tpc.id}>{tpc.title} ({tpc.date})</option>
-              ))}
-            </select>
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-1 block text-sm font-medium text-slate-700">{t('teacher.selectStudent')}</label>
-            <select
+            />
+
+            <Select
+              label={t('teacher.selectStudent')}
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-              required
+              options={studentOptions}
+              placeholder={
+                loadingStudents 
+                  ? t('common.loading') 
+                  : !classId 
+                    ? t('teacher.selectClass') + ' first' 
+                    : t('teacher.selectStudent')
+              }
               disabled={!classId || loadingStudents}
-            >
-              <option value="">{loadingStudents ? t('common.loading') : !classId ? t('teacher.selectClass') + ' first' : t('teacher.selectStudent')}</option>
-              {students.map((s) => (
-                <option key={s.id} value={s.id}>{s.user.name} – {s.user.email}</option>
-              ))}
-            </select>
+              required
+            />
+
+            <Input 
+              label={t('teacher.date')} 
+              type="date" 
+              value={date} 
+              onChange={(e) => setDate(e.target.value)} 
+              required 
+            />
+
+            <div className="flex items-center gap-3 pt-8">
+              <input 
+                type="checkbox" 
+                id="justified" 
+                checked={justified} 
+                onChange={(e) => setJustified(e.target.checked)} 
+                className="h-4 w-4 rounded border-border text-primary focus:ring-primary/20" 
+              />
+              <label htmlFor="justified" className="text-sm font-medium text-text-primary">
+                {t('teacher.justified')}
+              </label>
+            </div>
           </div>
 
-          <Input label={t('teacher.date')} type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
-          <div className="flex items-center gap-2 md:col-span-2">
-            <input type="checkbox" id="justified" checked={justified} onChange={(e) => setJustified(e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
-            <label htmlFor="justified" className="text-sm text-slate-700">{t('teacher.justified')}</label>
-          </div>
-          <div className="md:col-span-2">
-            <Button type="submit" disabled={submitting || loadingCatalog}>
-              {submitting ? 'Saving…' : t('teacher.recordAbsence')}
+          <div className="flex justify-end pt-4">
+            <Button 
+              type="submit" 
+              disabled={submitting || loadingCatalog}
+              className="min-w-[140px]"
+            >
+              {submitting ? t('common.loading') : t('teacher.recordAbsence')}
             </Button>
           </div>
         </form>

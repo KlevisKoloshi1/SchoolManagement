@@ -30,9 +30,22 @@ import StudentAbsences from '../pages/student/StudentAbsences'
 
 function RootRedirect() {
   const { role, isAuthenticated, isBootstrapped } = useAuth()
-  if (!isBootstrapped) return null
-  if (!isAuthenticated) return <Navigate to="/login" replace />
-  return <Navigate to={roleHomePath(role)} replace />
+  
+  if (!isBootstrapped) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+  
+  const homePath = roleHomePath(role)
+  console.log('Root redirect:', { role, homePath })
+  return <Navigate to={homePath} replace />
 }
 
 export function makeRouter() {

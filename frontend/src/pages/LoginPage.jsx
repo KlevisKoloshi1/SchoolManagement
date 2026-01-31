@@ -36,10 +36,18 @@ export default function LoginPage() {
 
     setSubmitting(true)
     try {
+      console.log('Attempting login...')
       const user = await signIn({ login, password })
-      navigate(from || roleHomePath(user.role), { replace: true })
+      console.log('Login successful, user:', user)
+      console.log('Redirecting to:', from || roleHomePath(user.role))
+      
+      // Small delay to ensure state is updated
+      setTimeout(() => {
+        navigate(from || roleHomePath(user.role), { replace: true })
+      }, 100)
     } catch (err) {
-      const message = err?.response?.data?.message || t('auth.loginFailed')
+      console.error('Login failed:', err)
+      const message = err?.response?.data?.message || err?.message || t('auth.loginFailed')
       setError(message)
     } finally {
       setSubmitting(false)
@@ -77,8 +85,8 @@ export default function LoginPage() {
               <Logo size={32} className="text-white hidden" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('auth.welcomeBack')}</h1>
-          <p className="text-muted text-sm">{t('auth.signInDescription')}</p>
+          <h1 className="text-3xl font-bold text-text-primary mb-2">{t('auth.welcomeBack')}</h1>
+          <p className="text-text-secondary text-sm">{t('auth.signInDescription')}</p>
         </div>
 
         {/* Login Card */}

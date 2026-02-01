@@ -59,7 +59,7 @@ class AdminTeacherController extends Controller
             email: $validated['email'] ?? null,
             isMainTeacher: (bool) $validated['is_main_teacher'],
             classId: isset($validated['class_id']) ? (int) $validated['class_id'] : null,
-            subjectId: isset($validated['subject_id']) ? (int) $validated['subject_id'] : null,
+            subjectId: null,
             subjectIds: $subjectIds,
         );
 

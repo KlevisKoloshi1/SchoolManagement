@@ -8,7 +8,6 @@ export default function AdminTeachers() {
   const [email, setEmail] = useState('')
   const [isMainTeacher, setIsMainTeacher] = useState(false)
   const [classId, setClassId] = useState('')
-  const [subjectId, setSubjectId] = useState('')
   const [subjectIds, setSubjectIds] = useState([])
 
   const [classes, setClasses] = useState([])
@@ -33,7 +32,6 @@ export default function AdminTeachers() {
       getClasses({ available_for_main_teacher: true }).then((d) => setClasses(d.classes || [])).catch(() => setClasses([]))
     } else {
       setClassId('')
-      setSubjectId('')
       setSubjectIds([])
     }
   }, [isMainTeacher])
@@ -58,21 +56,14 @@ export default function AdminTeachers() {
 
     if (!name.trim()) return setError('Name is required.')
     if (!email.trim()) return setError('Email is required.')
-    if (isMainTeacher) {
-      if (!classId) return setError('Class is required for main teacher.')
-      if (!subjectId) return setError('Subject is required for main teacher.')
-    } else {
-      if (!subjectIds?.length) return setError('Select at least one subject.')
-    }
+    if (!subjectIds?.length) return setError('Select at least one subject.')
+    if (isMainTeacher && !classId) return setError('Class is required for main teacher.')
 
     setSubmitting(true)
     try {
-      const payload = { name, email, is_main_teacher: isMainTeacher }
+      const payload = { name, email, is_main_teacher: isMainTeacher, subject_ids: subjectIds.map((id) => Number(id)) }
       if (isMainTeacher) {
         payload.class_id = Number(classId)
-        payload.subject_id = Number(subjectId)
-      } else {
-        payload.subject_ids = subjectIds.map((id) => Number(id))
       }
       const data = await createTeacher(payload)
       setCreated(data)
@@ -80,7 +71,6 @@ export default function AdminTeachers() {
       setEmail('')
       setIsMainTeacher(false)
       setClassId('')
-      setSubjectId('')
       setSubjectIds([])
       await fetchTeachers()
     } catch (err) {
@@ -134,43 +124,28 @@ export default function AdminTeachers() {
           </label>
 
           {isMainTeacher && (
-            <>
-              <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium text-slate-700">Class</label>
-                <select
-                  value={classId}
-                  onChange={(e) => setClassId(e.target.value)}
-                  className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-                >
-                  <option value="">Select class</option>
-                  {classes.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium text-slate-700">Subject (for main class)</label>
-                <select
-                  value={subjectId}
-                  onChange={(e) => setSubjectId(e.target.value)}
-                  className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-                >
-                  <option value="">Select subject</option>
-                  {subjects.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </>
+            <div className="md:col-span-2">
+              <label className="mb-1 block text-sm font-medium text-slate-700">Class</label>
+              <select
+                value={classId}
+                onChange={(e) => setClassId(e.target.value)}
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              >
+                <option value="">Select class</option>
+                {classes.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
 
-          {!isMainTeacher && subjects.length > 0 && (
+          {subjects.length > 0 && (
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Subjects (this teacher will teach)</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                {isMainTeacher ? 'Subjects (for other classes when viewing as teacher)' : 'Subjects (this teacher will teach)'}
+              </label>
               <div className="flex flex-wrap gap-2 border border-slate-300 rounded-md bg-white p-3">
                 {subjects.map((s) => (
                   <label key={s.id} className="inline-flex items-center gap-2 cursor-pointer">

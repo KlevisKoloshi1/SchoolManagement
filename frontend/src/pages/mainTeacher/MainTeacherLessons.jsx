@@ -26,7 +26,7 @@ export default function MainTeacherLessons() {
   const isViewingHomeroom = currentClassId == null || (homeroomClass && currentClassId === homeroomClass.id)
 
   useEffect(() => {
-    Promise.all([getSubjects(), getStudents(currentClassId ?? undefined)])
+    Promise.all([getSubjects(currentClassId ?? undefined), getStudents(currentClassId ?? undefined)])
       .then(([subj, studentsRes]) => {
         setSubjects(subj.subjects || [])
         setClassInfo(studentsRes.class || null)

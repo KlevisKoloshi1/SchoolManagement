@@ -104,7 +104,8 @@ class AdminTeacherService
      */
     public function createTeacher(string $name, ?string $email, bool $isMainTeacher, ?int $classId = null, ?int $subjectId = null, ?array $subjectIds = null): array
     {
-        return DB::transaction(function () use ($name, $email, $isMainTeacher, $classId, $subjectId, $subjectIds) {
+        return DB::transaction(function () use ($name, $email, $isMainTeacher, $classId, $subjectIds) {
+            $subjectIdsToSync = $subjectIds;
             $username = $this->credentialService->generateUsername($name);
             $passwordPlain = $this->credentialService->generatePassword();
 
@@ -141,9 +142,9 @@ class AdminTeacherService
                 $class->save();
             }
 
-            if ($isMainTeacher && $subjectId !== null) {
-                Subject::query()->findOrFail($subjectId);
-                $teacher->subjects()->syncWithoutDetaching([$subjectId]);
+            if ($isMainTeacher && ! empty($subjectIdsToSync)) {
+                Subject::query()->whereIn('id', $subjectIdsToSync)->get();
+                $teacher->subjects()->sync(array_values($subjectIdsToSync));
             }
 
             if (! $isMainTeacher && ! empty($subjectIds)) {

@@ -40,7 +40,7 @@ export default function MainTeacherGrades() {
       try {
         const [studentsRes, subjectsRes] = await Promise.all([
           getStudents(currentClassId ?? undefined),
-          getSubjects(),
+          getSubjects(currentClassId ?? undefined),
         ])
         setHomeroomClass(studentsRes.homeroom_class || null)
         setClassInfo(studentsRes.class || null)

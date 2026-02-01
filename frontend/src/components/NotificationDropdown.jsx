@@ -52,16 +52,17 @@ function NotificationPanel({ activities, announcements, loading }) {
 
 export function MainTeacherNotificationDropdown() {
   const { t } = useTranslation()
-  const { currentClassId } = useMainTeacherClass()
   const [open, setOpen] = useState(false)
   const [activities, setActivities] = useState([])
   const [announcements, setAnnouncements] = useState([])
   const [loading, setLoading] = useState(false)
   const ref = useRef(null)
 
-  useEffect(() => {
+  function fetchNotifications() {
     setLoading(true)
-    Promise.all([getActivities(currentClassId ?? undefined), getAnnouncements(currentClassId ?? undefined)])
+    // Always use homeroom class for notifications so main teacher sees activities/announcements
+    // for their class when admin adds them, regardless of which class they are currently viewing.
+    Promise.all([getActivities(), getAnnouncements()])
       .then(([actRes, annRes]) => {
         setActivities(actRes?.activities ?? [])
         setAnnouncements(annRes?.announcements ?? [])
@@ -71,7 +72,23 @@ export function MainTeacherNotificationDropdown() {
         setAnnouncements([])
       })
       .finally(() => setLoading(false))
-  }, [currentClassId])
+  }
+
+  useEffect(() => {
+    fetchNotifications()
+  }, [])
+
+  useEffect(() => {
+    if (open) fetchNotifications()
+  }, [open])
+
+  useEffect(() => {
+    function onFocus() {
+      fetchNotifications()
+    }
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [])
 
   useEffect(() => {
     function handleClickOutside(e) {

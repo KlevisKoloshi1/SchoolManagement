@@ -25,7 +25,8 @@ class StoreTeacherRequest extends FormRequest
 
         if ($this->boolean('is_main_teacher')) {
             $rules['class_id'] = ['required', 'integer', 'exists:classes,id'];
-            $rules['subject_id'] = ['required', 'integer', 'exists:subjects,id'];
+            $rules['subject_ids'] = ['required', 'array', 'min:1'];
+            $rules['subject_ids.*'] = ['integer', 'exists:subjects,id'];
         } else {
             $rules['subject_ids'] = ['required', 'array', 'min:1'];
         }

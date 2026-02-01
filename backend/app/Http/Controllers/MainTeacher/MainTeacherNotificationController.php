@@ -17,6 +17,7 @@ class MainTeacherNotificationController extends Controller
     private function classId(Request $request): ?int
     {
         $teacher = $this->teacherContext->getTeacherOrFail($request->user());
+        $teacher->load('homeroomClass');
         $queryClassId = $request->query('class_id');
         if ($queryClassId !== null && $queryClassId !== '') {
             return (int) $queryClassId;

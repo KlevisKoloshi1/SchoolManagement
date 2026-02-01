@@ -15,13 +15,23 @@ class MainTeacherCatalogController extends Controller
     }
 
     /**
-     * Return all subjects so the main teacher can choose any subject
-     * when adding lesson topics, absences, or grades (no admin assignment required).
+     * When the main teacher is viewing their homeroom class: return all subjects.
+     * When they switch to another class: return only the subjects assigned to them by the admin.
      */
     public function subjects(Request $request)
     {
-        $this->teacherContext->getTeacherOrFail($request->user());
-        $subjects = Subject::query()->orderBy('name')->get(['id', 'name']);
+        $teacher = $this->teacherContext->getTeacherOrFail($request->user());
+        $teacher->load('homeroomClass');
+        $queryClassId = $request->query('class_id');
+        $homeroomId = $teacher->homeroomClass?->id;
+
+        if ($queryClassId === null || $queryClassId === '' || (int) $queryClassId === $homeroomId) {
+            $subjects = Subject::query()->orderBy('name')->get(['id', 'name']);
+        } else {
+            $teacher->load(['subjects' => fn ($q) => $q->orderBy('name')]);
+            $subjects = $teacher->subjects->map(fn ($s) => ['id' => $s->id, 'name' => $s->name])->values();
+        }
+
         return response()->json(['subjects' => $subjects]);
     }
 

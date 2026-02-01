@@ -6,8 +6,9 @@ export async function getStudents(classId = null) {
   return data
 }
 
-export async function getSubjects() {
-  const { data } = await apiClient.get('/main-teacher/subjects')
+export async function getSubjects(classId = null) {
+  const params = classId != null ? { class_id: classId } : {}
+  const { data } = await apiClient.get('/main-teacher/subjects', { params })
   return data
 }
 

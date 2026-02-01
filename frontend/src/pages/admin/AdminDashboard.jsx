@@ -14,12 +14,6 @@ export default function AdminDashboard() {
       color: 'from-primary/10 to-primary/5'
     },
     {
-      title: t('admin.assignments'),
-      description: t('admin.assignTeachers'),
-      icon: '◆',
-      color: 'from-accent/10 to-accent/5'
-    },
-    {
       title: t('navigation.activities'),
       description: t('admin.activitiesDescription'),
       link: '/admin/activities',

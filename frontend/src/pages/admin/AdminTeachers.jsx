@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { createTeacher, getTeachers, deleteTeacher, getClasses, getSubjects } from '../../api/admin'
-import { Alert, Button, Card, Input } from '../../components/ui'
+import { Alert, Button, Card, ConfirmDialog, Input } from '../../components/ui'
 
 export default function AdminTeachers() {
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [isMainTeacher, setIsMainTeacher] = useState(false)
@@ -21,6 +23,7 @@ export default function AdminTeachers() {
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState(null)
   const [deletingTeacherId, setDeletingTeacherId] = useState(null)
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
   useEffect(() => {
     fetchTeachers()
@@ -80,13 +83,18 @@ export default function AdminTeachers() {
     }
   }
 
-  async function onDelete(teacherId, teacherName) {
-    if (!confirm(`Are you sure you want to delete teacher "${teacherName}"? This action cannot be undone.`)) {
-      return
-    }
-    setDeletingTeacherId(teacherId)
+  function openDeleteModal(teacherId, teacherName) {
+    setDeleteTarget({ id: teacherId, name: teacherName })
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return
+    const { id } = deleteTarget
+    setDeletingTeacherId(id)
     try {
-      await deleteTeacher(teacherId)
+      await deleteTeacher(id)
+      setFetchError(null)
+      setDeleteTarget(null)
       await fetchTeachers()
     } catch (err) {
       setFetchError(err?.response?.data?.message || 'Failed to delete teacher.')
@@ -253,7 +261,7 @@ export default function AdminTeachers() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => onDelete(teacher.id, teacher.user.name)}
+                    onClick={() => openDeleteModal(teacher.id, teacher.user.name)}
                     disabled={deletingTeacherId === teacher.id}
                     className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                   >
@@ -272,6 +280,18 @@ export default function AdminTeachers() {
           </div>
         )}
       </Card>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title={t('common.delete')}
+        message={deleteTarget ? t('admin.confirmDeleteTeacher', { name: deleteTarget.name }) : ''}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        variant="danger"
+        confirmDisabled={!!deletingTeacherId}
+        onConfirm={confirmDelete}
+        onCancel={() => !deletingTeacherId && setDeleteTarget(null)}
+      />
     </div>
   )
 }

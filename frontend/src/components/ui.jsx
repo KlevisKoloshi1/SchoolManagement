@@ -144,6 +144,43 @@ export function Spinner({ size = 18, className = '' }) {
   )
 }
 
+/**
+ * Confirmation dialog modal. Avoids native confirm() which can block/freeze
+ * the renderer in Electron and cause focus/input issues.
+ */
+export function ConfirmDialog({ open, title, message, confirmLabel, cancelLabel, variant = 'danger', confirmDisabled, onConfirm, onCancel }) {
+  if (!open) return null
+  const isDanger = variant === 'danger'
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-dialog-title"
+    >
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={confirmDisabled ? undefined : onCancel}
+        aria-hidden="true"
+      />
+      <div className="relative rounded-2xl border border-border bg-surface shadow-soft p-6 max-w-md w-full animate-fade-in">
+        <h2 id="confirm-dialog-title" className="text-lg font-semibold text-text-primary mb-2">
+          {title}
+        </h2>
+        <p className="text-sm text-text-secondary mb-6">{message}</p>
+        <div className="flex gap-3 justify-end">
+          <Button variant="secondary" onClick={onCancel} disabled={confirmDisabled}>
+            {cancelLabel}
+          </Button>
+          <Button variant={isDanger ? 'danger' : 'primary'} onClick={onConfirm} disabled={confirmDisabled}>
+            {confirmLabel}
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Modern Badge Component
 export function Badge({ children, variant = 'default', className = '' }) {
   const styles = 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getStudents, addStudent, deleteStudent } from '../../api/mainTeacher'
-import { Alert, Button, Card, Input } from '../../components/ui'
+import { Alert, Button, Card, ConfirmDialog, Input } from '../../components/ui'
 import { useMainTeacherClass } from '../../contexts/MainTeacherClassContext'
 
 export default function MainTeacherStudents() {
@@ -22,6 +22,7 @@ export default function MainTeacherStudents() {
   const [success, setSuccess] = useState(null)
   const [lastCredentials, setLastCredentials] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
   const isViewingHomeroom = currentClassId == null || (homeroomClass && currentClassId === homeroomClass.id)
 
@@ -66,13 +67,19 @@ export default function MainTeacherStudents() {
     }
   }
 
-  async function onDelete(studentId) {
-    if (!window.confirm(t('mainTeacher.confirmDeleteStudent'))) return
-    setDeletingId(studentId)
+  function openDeleteModal(studentId) {
+    setDeleteTarget({ id: studentId })
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return
+    const { id } = deleteTarget
+    setDeletingId(id)
     setError(null)
     try {
-      await deleteStudent(studentId)
+      await deleteStudent(id)
       setSuccess(t('mainTeacher.studentDeleted'))
+      setDeleteTarget(null)
       if (isViewingHomeroom) await fetchCatalogAndStudents()
       else await fetchCatalogAndStudents()
     } catch (err) {
@@ -163,7 +170,7 @@ export default function MainTeacherStudents() {
                   <Button
                     type="button"
                     variant="secondary"
-                    onClick={() => onDelete(s.id)}
+                    onClick={() => openDeleteModal(s.id)}
                     disabled={deletingId === s.id}
                     className="text-red-600 hover:bg-red-50"
                   >
@@ -175,6 +182,18 @@ export default function MainTeacherStudents() {
           </ul>
         )}
       </Card>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title={t('common.delete')}
+        message={deleteTarget ? t('mainTeacher.confirmDeleteStudent') : ''}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        variant="danger"
+        confirmDisabled={!!deletingId}
+        onConfirm={confirmDelete}
+        onCancel={() => !deletingId && setDeleteTarget(null)}
+      />
     </div>
   )
 }

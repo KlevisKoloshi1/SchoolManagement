@@ -72,7 +72,8 @@
     "assignTeachers": "Cakto mësuesin kryesor në klasë dhe lëndët tek mësuesit.",
     "comprehensiveTools": "Menaxho mësuesit, klasat dhe lëndët me mjete të plota administrative.",
     "activitiesDescription": "Krijo aktivitete shkolle dhe zgjidh cilat klasa i shohin.",
-    "announcementsDescription": "Njofto mësuesit kryesorë dhe nxënësit për lënda të anuluara ose të shtyra."
+    "announcementsDescription": "Njofto mësuesit kryesorë dhe nxënësit për lënda të anuluara ose të shtyra.",
+    "confirmDeleteTeacher": "Jeni të sigurt që dëshironi të fshini mësuesin \"{{name}}\"? Ky veprim nuk mund të zhbëhet."
   },
   "notifications": {
     "addActivity": "Shto Aktivitet",

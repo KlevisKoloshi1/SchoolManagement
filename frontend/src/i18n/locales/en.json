@@ -72,7 +72,8 @@
     "assignTeachers": "Assign main teacher to class and subjects to teachers.",
     "comprehensiveTools": "Manage teachers, classes, and subjects with comprehensive administrative tools.",
     "activitiesDescription": "Create school activities and choose which classrooms see them.",
-    "announcementsDescription": "Notify main teachers and students about cancelled or postponed subjects."
+    "announcementsDescription": "Notify main teachers and students about cancelled or postponed subjects.",
+    "confirmDeleteTeacher": "Are you sure you want to delete teacher \"{{name}}\"? This action cannot be undone."
   },
   "notifications": {
     "addActivity": "Add Activity",

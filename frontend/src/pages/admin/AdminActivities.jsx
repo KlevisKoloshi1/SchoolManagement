@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getActivities, createActivity, deleteActivity, getClasses } from '../../api/admin'
-import { Alert, Button, Card, Input } from '../../components/ui'
+import { Alert, Button, Card, ConfirmDialog, Input } from '../../components/ui'
 
 export default function AdminActivities() {
   const { t } = useTranslation()
@@ -19,6 +19,7 @@ export default function AdminActivities() {
   const [success, setSuccess] = useState(null)
   const [fetchError, setFetchError] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
   useEffect(() => {
     fetchActivities()
@@ -68,11 +69,18 @@ export default function AdminActivities() {
     }
   }
 
-  async function onDelete(id, activityName) {
-    if (!confirm(t('notifications.confirmDeleteActivity', { name: activityName }))) return
+  function openDeleteModal(id, name) {
+    setDeleteTarget({ id, name })
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return
+    const { id } = deleteTarget
     setDeletingId(id)
     try {
       await deleteActivity(id)
+      setFetchError(null)
+      setDeleteTarget(null)
       await fetchActivities()
     } catch (err) {
       setFetchError(err?.response?.data?.message || 'Failed to delete.')
@@ -177,7 +185,7 @@ export default function AdminActivities() {
                 <Button
                   variant="danger"
                   size="sm"
-                  onClick={() => onDelete(a.id, a.name)}
+                  onClick={() => openDeleteModal(a.id, a.name)}
                   disabled={deletingId === a.id}
                 >
                   {deletingId === a.id ? t('common.loading') : t('common.delete')}
@@ -187,6 +195,18 @@ export default function AdminActivities() {
           </ul>
         )}
       </Card>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title={t('common.delete')}
+        message={deleteTarget ? t('notifications.confirmDeleteActivity', { name: deleteTarget.name }) : ''}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        variant="danger"
+        confirmDisabled={!!deletingId}
+        onConfirm={confirmDelete}
+        onCancel={() => !deletingId && setDeleteTarget(null)}
+      />
     </div>
   )
 }

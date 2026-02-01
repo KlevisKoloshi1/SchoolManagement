@@ -164,11 +164,18 @@ class AdminTeacherService
         DB::transaction(function () use ($teacherId) {
             $teacher = Teacher::query()->findOrFail($teacherId);
             $user = $teacher->user;
-            
-            // Delete the teacher record first
+
+            // Unassign from homeroom class so classes.main_teacher_id FK allows teacher delete
+            SchoolClass::query()->where('main_teacher_id', $teacherId)->update(['main_teacher_id' => null]);
+
+            // Delete dependent records (RESTRICT FK) in correct order:
+            // Grades and absences reference teacher_id; lesson_topics reference teacher_id.
+            // Grades/absences also reference lesson_topics (nullOnDelete), so we delete by teacher_id first.
+            $teacher->grades()->delete();
+            $teacher->absences()->delete();
+            $teacher->lessonTopics()->delete();
+
             $teacher->delete();
-            
-            // Then delete the associated user
             $user->delete();
         });
     }

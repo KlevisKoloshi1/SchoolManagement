@@ -14,7 +14,7 @@ class AdminAnnouncementController extends Controller
     public function index()
     {
         $announcements = Announcement::query()
-            ->with(['classes:id,name', 'subject:id,name'])
+            ->with(['classes', 'subject:id,name'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -47,7 +47,7 @@ class AdminAnnouncementController extends Controller
             $announcement->classes()->sync($validated['class_ids']);
         }
         $this->notifyMainTeachersForAnnouncement($announcement);
-        $announcement->load(['classes:id,name', 'subject:id,name']);
+        $announcement->load(['classes', 'subject:id,name']);
         return response()->json([
             'message' => 'Announcement created.',
             'announcement' => $this->mapAnnouncement($announcement),
@@ -70,7 +70,7 @@ class AdminAnnouncementController extends Controller
         } else {
             $announcement->classes()->sync($validated['class_ids'] ?? []);
         }
-        $announcement->load(['classes:id,name', 'subject:id,name']);
+        $announcement->load(['classes', 'subject:id,name']);
         return response()->json([
             'message' => 'Announcement updated.',
             'announcement' => $this->mapAnnouncement($announcement),
@@ -98,7 +98,7 @@ class AdminAnnouncementController extends Controller
                 ->with(['mainTeacher.user'])
                 ->get();
         } else {
-            $classIds = $announcement->classes()->pluck('id');
+            $classIds = $announcement->classes()->pluck('classes.id');
             if ($classIds->isEmpty()) {
                 return;
             }

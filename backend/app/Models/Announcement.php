@@ -33,6 +33,7 @@ class Announcement extends Model
 
     public function classes(): BelongsToMany
     {
-        return $this->belongsToMany(SchoolClass::class, 'announcement_class', 'announcement_id', 'class_id');
+        return $this->belongsToMany(SchoolClass::class, 'announcement_class', 'announcement_id', 'class_id')
+            ->select('classes.id', 'classes.name');
     }
 }

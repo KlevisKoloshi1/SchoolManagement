@@ -180,7 +180,8 @@
     "addLessonTopics": "Shto temat e mësimeve për lëndët tuaja.",
     "records": "Regjistra",
     "addAbsencesGrades": "Shto mungesat dhe notat.",
-    "noSubjectsAssigned": "Nuk ju janë caktuar lënda. Kërkojini administratorit t'ju caktojë lëndët."
+    "noSubjectsAssigned": "Nuk ju janë caktuar lënda. Kërkojini administratorit t'ju caktojë lëndët.",
+    "failedToLoadSubjects": "Dështoi ngarkimi i lëndëve. Ju lutemi rifreskoni faqen."
   },
   "student": {
     "dashboard": "Paneli i Nxënësit",

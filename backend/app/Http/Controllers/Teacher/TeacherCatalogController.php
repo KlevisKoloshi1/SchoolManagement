@@ -16,8 +16,9 @@ class TeacherCatalogController extends Controller
     public function subjects(Request $request)
     {
         $teacher = $this->teacherContext->getTeacherOrFail($request->user());
-        $subjects = $teacher->subjects()->orderBy('name')->get(['id', 'name']);
-        return response()->json(['subjects' => $subjects]);
+        $teacher->load(['subjects' => fn ($q) => $q->orderBy('name')]);
+        $subjects = $teacher->subjects->map(fn ($s) => ['id' => $s->id, 'name' => $s->name]);
+        return response()->json(['subjects' => $subjects->values()->all()]);
     }
 
     public function classes()

@@ -27,19 +27,18 @@ class MainTeacherNotificationController extends Controller
     public function activities(Request $request)
     {
         $classId = $this->classId($request);
-        if (! $classId) {
-            return response()->json(['activities' => []]);
-        }
-        $activities = Activity::query()
-            ->where(function ($q) use ($classId) {
+        $query = Activity::query();
+        if ($classId) {
+            $query->where(function ($q) use ($classId) {
                 $q->where('for_all_classes', true)
                     ->orWhereHas('classes', function ($q2) use ($classId) {
                         $q2->where('classes.id', $classId);
                     });
-            })
-            ->orderBy('date', 'desc')
-            ->orderBy('id', 'desc')
-            ->get();
+            });
+        } else {
+            $query->where('for_all_classes', true);
+        }
+        $activities = $query->orderBy('date', 'desc')->orderBy('id', 'desc')->get();
         return response()->json([
             'activities' => $activities->map(function (Activity $a) {
                 return [
@@ -55,19 +54,18 @@ class MainTeacherNotificationController extends Controller
     public function announcements(Request $request)
     {
         $classId = $this->classId($request);
-        if (! $classId) {
-            return response()->json(['announcements' => []]);
-        }
-        $announcements = Announcement::query()
-            ->with('subject:id,name')
-            ->where(function ($q) use ($classId) {
+        $query = Announcement::query()->with('subject:id,name');
+        if ($classId) {
+            $query->where(function ($q) use ($classId) {
                 $q->where('for_all_classes', true)
                     ->orWhereHas('classes', function ($q2) use ($classId) {
                         $q2->where('classes.id', $classId);
                     });
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
+            });
+        } else {
+            $query->where('for_all_classes', true);
+        }
+        $announcements = $query->orderBy('created_at', 'desc')->get();
         return response()->json([
             'announcements' => $announcements->map(function (Announcement $a) {
                 return [
@@ -85,21 +83,20 @@ class MainTeacherNotificationController extends Controller
     public function calendar(Request $request)
     {
         $classId = $this->classId($request);
-        if (! $classId) {
-            return response()->json(['activities' => []]);
-        }
         $from = $request->query('from') ?: now()->startOfMonth()->format('Y-m-d');
-        $to = $request->query('to') ?: now()->endOfMonth()->addMonths(2)->format('Y-m-d');
-        $activities = Activity::query()
-            ->where(function ($q) use ($classId) {
+        $to = $request->query('to') ?: now()->endOfMonth()->format('Y-m-d');
+        $query = Activity::query()->whereBetween('date', [$from, $to]);
+        if ($classId) {
+            $query->where(function ($q) use ($classId) {
                 $q->where('for_all_classes', true)
                     ->orWhereHas('classes', function ($q2) use ($classId) {
                         $q2->where('classes.id', $classId);
                     });
-            })
-            ->whereBetween('date', [$from, $to])
-            ->orderBy('date')
-            ->get();
+            });
+        } else {
+            $query->where('for_all_classes', true);
+        }
+        $activities = $query->orderBy('date')->get();
         return response()->json([
             'activities' => $activities->map(function (Activity $a) {
                 return [

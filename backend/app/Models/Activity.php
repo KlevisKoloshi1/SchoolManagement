@@ -24,7 +24,6 @@ class Activity extends Model
 
     public function classes(): BelongsToMany
     {
-        return $this->belongsToMany(SchoolClass::class, 'activity_class', 'activity_id', 'class_id')
-            ->withTimestamps();
+        return $this->belongsToMany(SchoolClass::class, 'activity_class', 'activity_id', 'class_id');
     }
 }

@@ -33,7 +33,6 @@ class Announcement extends Model
 
     public function classes(): BelongsToMany
     {
-        return $this->belongsToMany(SchoolClass::class, 'announcement_class', 'announcement_id', 'class_id')
-            ->withTimestamps();
+        return $this->belongsToMany(SchoolClass::class, 'announcement_class', 'announcement_id', 'class_id');
     }
 }

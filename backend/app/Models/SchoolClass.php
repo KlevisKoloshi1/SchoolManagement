@@ -31,14 +31,12 @@ class SchoolClass extends Model
 
     public function activities(): BelongsToMany
     {
-        return $this->belongsToMany(Activity::class, 'activity_class', 'class_id', 'activity_id')
-            ->withTimestamps();
+        return $this->belongsToMany(Activity::class, 'activity_class', 'class_id', 'activity_id');
     }
 
     public function announcements(): BelongsToMany
     {
-        return $this->belongsToMany(Announcement::class, 'announcement_class', 'class_id', 'announcement_id')
-            ->withTimestamps();
+        return $this->belongsToMany(Announcement::class, 'announcement_class', 'class_id', 'announcement_id');
     }
 }
 

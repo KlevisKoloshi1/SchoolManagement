@@ -12,6 +12,7 @@ export default function StudentCalendar() {
     return { year: d.getFullYear(), month: d.getMonth() }
   })
 
+  // Single month view: first and last day of the current month
   const from = `${month.year}-${String(month.month + 1).padStart(2, '0')}-01`
   const lastDay = new Date(month.year, month.month + 1, 0).getDate()
   const to = `${month.year}-${String(month.month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`

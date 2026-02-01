@@ -180,7 +180,8 @@
     "addLessonTopics": "Add lesson topics for your subjects.",
     "records": "Records",
     "addAbsencesGrades": "Add absences and grades.",
-    "noSubjectsAssigned": "No subjects assigned to you. Ask the admin to assign your subjects."
+    "noSubjectsAssigned": "No subjects assigned to you. Ask the admin to assign your subjects.",
+    "failedToLoadSubjects": "Failed to load subjects. Please refresh the page."
   },
   "student": {
     "dashboard": "Student Dashboard",

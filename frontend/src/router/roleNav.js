@@ -40,6 +40,7 @@ export function navForRole(role) {
         { to: '/main-teacher/lessons', labelKey: 'mainTeacher.lessons' },
         { to: '/main-teacher/absences', labelKey: 'mainTeacher.absencesTitle' },
         { to: '/main-teacher/grades', labelKey: 'mainTeacher.gradesTitle' },
+        { to: '/main-teacher/calendar', labelKey: 'navigation.calendar' },
       ]
     case ROLE.teacher:
       return [

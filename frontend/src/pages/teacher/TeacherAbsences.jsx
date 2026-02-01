@@ -30,11 +30,16 @@ export default function TeacherAbsences() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
+  const [subjectsError, setSubjectsError] = useState(null)
 
   useEffect(() => {
+    setSubjectsError(null)
     getSubjects()
       .then((d) => setSubjects(d.subjects || []))
-      .catch(() => {})
+      .catch(() => {
+        setSubjectsError(t('teacher.failedToLoadSubjects') || 'Failed to load subjects. Please refresh the page.')
+        setSubjects([])
+      })
       .finally(() => setLoadingCatalog(false))
   }, [])
 
@@ -139,7 +144,14 @@ export default function TeacherAbsences() {
           )}
 
           <div className="grid gap-6 md:grid-cols-2">
-            {!loadingCatalog && subjects.length === 0 ? (
+            {subjectsError ? (
+              <div>
+                <div className="mb-2 text-sm font-medium text-text-primary">{t('teacher.selectSubject')}</div>
+                <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                  {subjectsError}
+                </p>
+              </div>
+            ) : !loadingCatalog && subjects.length === 0 ? (
               <div>
                 <div className="mb-2 text-sm font-medium text-text-primary">{t('teacher.selectSubject')}</div>
                 <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">

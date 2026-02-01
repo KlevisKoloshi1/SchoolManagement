@@ -71,7 +71,7 @@ class StudentNotificationController extends Controller
         }
         $classId = $student->class_id;
         $from = $request->query('from') ?: now()->startOfMonth()->format('Y-m-d');
-        $to = $request->query('to') ?: now()->endOfMonth()->addMonths(2)->format('Y-m-d');
+        $to = $request->query('to') ?: now()->endOfMonth()->format('Y-m-d');
         $activities = Activity::query()
             ->where(function ($q) use ($classId) {
                 $q->where('for_all_classes', true)

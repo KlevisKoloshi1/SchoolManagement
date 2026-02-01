@@ -12,6 +12,7 @@ export default function MainTeacherCalendar() {
   const [year, setYear] = useState(() => new Date().getFullYear())
   const [month, setMonth] = useState(() => new Date().getMonth())
 
+  // Single month view: first and last day of the current month
   const from = `${year}-${String(month + 1).padStart(2, '0')}-01`
   const lastDay = new Date(year, month + 1, 0).getDate()
   const to = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`

@@ -18,11 +18,18 @@ export default function TeacherLessons() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
+  const [subjectsError, setSubjectsError] = useState(null)
 
   useEffect(() => {
+    setSubjectsError(null)
     getSubjects()
-      .then((d) => setSubjects(d.subjects || []))
-      .catch(() => {})
+      .then((d) => {
+        setSubjects(d.subjects || [])
+      })
+      .catch(() => {
+        setSubjectsError('Failed to load subjects. Please refresh the page.')
+        setSubjects([])
+      })
       .finally(() => setLoadingCatalog(false))
   }, [])
 
@@ -97,7 +104,11 @@ export default function TeacherLessons() {
 
           <div className="md:col-span-2">
             <label className="mb-1 block text-sm font-medium text-slate-700">Subject</label>
-            {!loadingCatalog && subjects.length === 0 ? (
+            {subjectsError ? (
+              <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+                {subjectsError}
+              </p>
+            ) : !loadingCatalog && subjects.length === 0 ? (
               <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
                 No subjects assigned to you. Ask the admin to assign your subjects.
               </p>

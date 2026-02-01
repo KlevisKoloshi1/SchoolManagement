@@ -1,21 +1,35 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../auth/AuthContext'
-import { getActivities, getAnnouncements } from '../api/mainTeacher'
+import { getActivities, getAnnouncements, getDatabaseNotifications, markNotificationsRead } from '../api/mainTeacher'
 import { getActivities as getStudentActivities, getAnnouncements as getStudentAnnouncements } from '../api/student'
 import { useMainTeacherClass } from '../contexts/MainTeacherClassContext'
 
-function NotificationPanel({ activities, announcements, loading }) {
+function NotificationPanel({ activities, announcements, databaseNotifications = [], loading }) {
   const { t } = useTranslation()
   if (loading) {
     return <p className="text-sm text-text-secondary py-4 text-center">{t('common.loading')}</p>
   }
-  const total = activities.length + announcements.length
+  const total = activities.length + announcements.length + databaseNotifications.length
   if (total === 0) {
     return <p className="text-sm text-text-secondary py-4 text-center">{t('notifications.noNotifications')}</p>
   }
   return (
     <>
+      {databaseNotifications.length > 0 && (
+        <div className="mb-3">
+          <div className="text-xs font-medium text-text-secondary uppercase tracking-wide px-2 py-1">
+            {t('notifications.newForYourClass')}
+          </div>
+          {databaseNotifications.slice(0, 5).map((n) => (
+            <div key={n.id} className="p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200/50 mb-1">
+              <div className="font-medium text-sm text-text-primary">{n.title}</div>
+              {n.class_name && <div className="text-xs text-text-secondary">{n.class_name}</div>}
+              <p className="text-xs text-text-secondary mt-1 line-clamp-2">{n.message}</p>
+            </div>
+          ))}
+        </div>
+      )}
       {activities.length > 0 && (
         <div className="mb-3">
           <div className="text-xs font-medium text-text-secondary uppercase tracking-wide px-2 py-1">
@@ -55,21 +69,23 @@ export function MainTeacherNotificationDropdown() {
   const [open, setOpen] = useState(false)
   const [activities, setActivities] = useState([])
   const [announcements, setAnnouncements] = useState([])
+  const [databaseNotifications, setDatabaseNotifications] = useState([])
   const [loading, setLoading] = useState(false)
   const ref = useRef(null)
 
+  // Backend uses main teacher's homeroom (same as student's class). No class_id param.
   function fetchNotifications() {
     setLoading(true)
-    // Always use homeroom class for notifications so main teacher sees activities/announcements
-    // for their class when admin adds them, regardless of which class they are currently viewing.
-    Promise.all([getActivities(), getAnnouncements()])
-      .then(([actRes, annRes]) => {
+    Promise.all([getActivities(), getAnnouncements(), getDatabaseNotifications()])
+      .then(([actRes, annRes, dbRes]) => {
         setActivities(actRes?.activities ?? [])
         setAnnouncements(annRes?.announcements ?? [])
+        setDatabaseNotifications(dbRes?.notifications ?? [])
       })
       .catch(() => {
         setActivities([])
         setAnnouncements([])
+        setDatabaseNotifications([])
       })
       .finally(() => setLoading(false))
   }
@@ -78,17 +94,13 @@ export function MainTeacherNotificationDropdown() {
     fetchNotifications()
   }, [])
 
+  // Refetch when opening dropdown so new activities appear without page refresh; mark as read when opening
   useEffect(() => {
-    if (open) fetchNotifications()
-  }, [open])
-
-  useEffect(() => {
-    function onFocus() {
+    if (open) {
       fetchNotifications()
+      markNotificationsRead().catch(() => {})
     }
-    window.addEventListener('focus', onFocus)
-    return () => window.removeEventListener('focus', onFocus)
-  }, [])
+  }, [open])
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -98,7 +110,7 @@ export function MainTeacherNotificationDropdown() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const total = activities.length + announcements.length
+  const total = activities.length + announcements.length + databaseNotifications.length
 
   return (
     <div className="relative" ref={ref}>
@@ -119,7 +131,7 @@ export function MainTeacherNotificationDropdown() {
         <div className="absolute right-0 top-full mt-2 w-80 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-surface shadow-soft z-50">
           <div className="p-3 border-b border-border font-medium text-text-primary">{t('navigation.notifications')}</div>
           <div className="p-2">
-            <NotificationPanel activities={activities} announcements={announcements} loading={loading} />
+            <NotificationPanel activities={activities} announcements={announcements} databaseNotifications={databaseNotifications} loading={loading} />
           </div>
         </div>
       )}

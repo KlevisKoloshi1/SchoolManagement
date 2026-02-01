@@ -81,3 +81,14 @@ export async function getCalendar(from, to, classId = null) {
   return data
 }
 
+export async function getDatabaseNotifications() {
+  const { data } = await apiClient.get('/main-teacher/database-notifications')
+  return data
+}
+
+export async function markNotificationsRead(notificationId = null) {
+  const params = notificationId ? { id: notificationId } : {}
+  const { data } = await apiClient.post('/main-teacher/database-notifications/read', null, { params })
+  return data
+}
+

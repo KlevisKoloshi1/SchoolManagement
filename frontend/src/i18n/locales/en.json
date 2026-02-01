@@ -108,6 +108,7 @@
     "noAnnouncements": "No announcements yet.",
     "confirmDeleteAnnouncement": "Delete announcement \"{{name}}\"?",
     "noNotifications": "No new notifications.",
+    "newForYourClass": "New for your class",
     "activities": "Activities",
     "announcements": "Announcements"
   },

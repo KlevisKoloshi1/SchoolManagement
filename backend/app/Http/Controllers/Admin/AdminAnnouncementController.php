@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreAnnouncementRequest;
 use App\Models\Announcement;
+use App\Models\SchoolClass;
+use App\Notifications\AnnouncementForClassNotification;
 use Illuminate\Http\Request;
 
 class AdminAnnouncementController extends Controller
@@ -44,6 +46,7 @@ class AdminAnnouncementController extends Controller
         if (! empty($validated['class_ids']) && ! $announcement->for_all_classes) {
             $announcement->classes()->sync($validated['class_ids']);
         }
+        $this->notifyMainTeachersForAnnouncement($announcement);
         $announcement->load(['classes:id,name', 'subject:id,name']);
         return response()->json([
             'message' => 'Announcement created.',
@@ -80,6 +83,38 @@ class AdminAnnouncementController extends Controller
         $announcement->classes()->sync([]);
         $announcement->delete();
         return response()->json(['message' => 'Announcement deleted.']);
+    }
+
+    /**
+     * Notify main teachers when an announcement targets their class.
+     * When specific classes are selected, notifies those classes' main teachers.
+     * When for_all_classes is true, notifies all main teachers.
+     */
+    private function notifyMainTeachersForAnnouncement(Announcement $announcement): void
+    {
+        if ($announcement->for_all_classes) {
+            $classes = SchoolClass::query()
+                ->whereNotNull('main_teacher_id')
+                ->with(['mainTeacher.user'])
+                ->get();
+        } else {
+            $classIds = $announcement->classes()->pluck('id');
+            if ($classIds->isEmpty()) {
+                return;
+            }
+            $classes = SchoolClass::query()
+                ->whereIn('id', $classIds)
+                ->whereNotNull('main_teacher_id')
+                ->with(['mainTeacher.user'])
+                ->get();
+        }
+
+        foreach ($classes as $class) {
+            $mainTeacher = $class->mainTeacher;
+            if ($mainTeacher && $mainTeacher->user) {
+                $mainTeacher->user->notify(new AnnouncementForClassNotification($announcement, $class->name));
+            }
+        }
     }
 
     private function mapAnnouncement(Announcement $a): array

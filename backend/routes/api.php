@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AssignmentController;
 use App\Http\Controllers\MainTeacher\MainTeacherAbsenceController;
 use App\Http\Controllers\MainTeacher\MainTeacherGradeController;
 use App\Http\Controllers\MainTeacher\MainTeacherLessonTopicController;
+use App\Http\Controllers\MainTeacher\MainTeacherNotificationController;
 use App\Http\Controllers\MainTeacher\MainTeacherStudentController;
 use App\Http\Controllers\Student\StudentAbsenceController;
 use App\Http\Controllers\Student\StudentGradeController;
@@ -57,6 +58,8 @@ Route::middleware('throttle:api')->group(function () {
             Route::get('/activities', [MainTeacherNotificationController::class, 'activities']);
             Route::get('/announcements', [MainTeacherNotificationController::class, 'announcements']);
             Route::get('/calendar', [MainTeacherNotificationController::class, 'calendar']);
+            Route::get('/database-notifications', [MainTeacherNotificationController::class, 'databaseNotifications']);
+            Route::post('/database-notifications/read', [MainTeacherNotificationController::class, 'markNotificationsRead']);
         });
 
         Route::prefix('teacher')->middleware('role:teacher')->group(function () {

@@ -32,6 +32,7 @@ export function navForRole(role) {
         { to: '/admin/teachers', labelKey: 'navigation.teachers' },
         { to: '/admin/activities', labelKey: 'navigation.activities' },
         { to: '/admin/announcements', labelKey: 'navigation.announcements' },
+        { to: '/admin/reports', labelKey: 'navigation.reports' },
       ]
     case ROLE.main_teacher:
       return [
@@ -41,6 +42,7 @@ export function navForRole(role) {
         { to: '/main-teacher/absences', labelKey: 'mainTeacher.absencesTitle' },
         { to: '/main-teacher/grades', labelKey: 'mainTeacher.gradesTitle' },
         { to: '/main-teacher/calendar', labelKey: 'navigation.calendar' },
+        { to: '/main-teacher/reports', labelKey: 'navigation.reports' },
       ]
     case ROLE.teacher:
       return [
@@ -55,6 +57,7 @@ export function navForRole(role) {
         { to: '/student/grades', labelKey: 'navigation.grades' },
         { to: '/student/absences', labelKey: 'mainTeacher.absencesTitle' },
         { to: '/student/calendar', labelKey: 'navigation.calendar' },
+        { to: '/student/reports', labelKey: 'navigation.reports' },
       ]
     default:
       return []

@@ -28,3 +28,21 @@ export async function getCalendar(from, to) {
   return data
 }
 
+/**
+ * Get current student's performance report.
+ * @param {{ year?: number, semester?: number }} [params]
+ */
+export async function getPerformanceReport(params = {}) {
+  const { data } = await apiClient.get('/student/performance-report', { params })
+  return data
+}/**
+ * Export performance report as PDF (returns blob for download/open).
+ * @param {{ year?: number, semester?: number }} [params]
+ */
+export async function exportPerformanceReportPdf(params = {}) {
+  const { data } = await apiClient.get('/student/performance-report/export', {
+    params,
+    responseType: 'blob',
+  })
+  return data
+}

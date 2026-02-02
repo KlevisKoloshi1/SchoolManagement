@@ -18,6 +18,24 @@ class AdminCatalogController extends Controller
         return response()->json(['classes' => $classes]);
     }
 
+    public function classStudents($classId)
+    {
+        $class = SchoolClass::query()->findOrFail($classId);
+        $students = $class->students()->with('user')->orderBy('id')->get();
+        return response()->json([
+            'class' => ['id' => $class->id, 'name' => $class->name],
+            'students' => $students->map(fn ($s) => [
+                'id' => $s->id,
+                'user' => [
+                    'id' => $s->user->id,
+                    'name' => $s->user->name,
+                    'email' => $s->user->email,
+                    'username' => $s->user->username,
+                ],
+            ]),
+        ]);
+    }
+
     public function subjects()
     {
         $subjects = Subject::query()->orderBy('name')->get(['id', 'name']);

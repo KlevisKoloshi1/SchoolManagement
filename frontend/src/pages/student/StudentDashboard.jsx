@@ -19,6 +19,13 @@ export default function StudentDashboard() {
       link: '/student/absences',
       icon: '◐',
       color: 'from-accent/10 to-accent/5'
+    },
+    {
+      title: t('student.reportsTitle'),
+      description: t('student.reportsDescription'),
+      link: '/student/reports',
+      icon: '📋',
+      color: 'from-blue-500/10 to-blue-500/5'
     }
   ]
 

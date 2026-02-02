@@ -12,6 +12,7 @@ import AdminTeachers from '../pages/admin/AdminTeachers'
 import AdminMainTeacherClassDetails from '../pages/admin/AdminMainTeacherClassDetails'
 import AdminActivities from '../pages/admin/AdminActivities'
 import AdminAnnouncements from '../pages/admin/AdminAnnouncements'
+import AdminReports from '../pages/admin/AdminReports'
 
 import { MainTeacherClassProvider } from '../contexts/MainTeacherClassContext'
 import { TeacherClassProvider } from '../contexts/TeacherClassContext'
@@ -21,16 +22,19 @@ import MainTeacherLessons from '../pages/mainTeacher/MainTeacherLessons'
 import MainTeacherAbsences from '../pages/mainTeacher/MainTeacherAbsences'
 import MainTeacherGrades from '../pages/mainTeacher/MainTeacherGrades'
 import MainTeacherCalendar from '../pages/mainTeacher/MainTeacherCalendar'
+import MainTeacherReports from '../pages/mainTeacher/MainTeacherReports'
 
 import TeacherDashboard from '../pages/teacher/TeacherDashboard'
 import TeacherLessons from '../pages/teacher/TeacherLessons'
 import TeacherAbsences from '../pages/teacher/TeacherAbsences'
 import TeacherGrades from '../pages/teacher/TeacherGrades'
+import TeacherReports from '../pages/teacher/TeacherReports'
 
 import StudentDashboard from '../pages/student/StudentDashboard'
 import StudentGrades from '../pages/student/StudentGrades'
 import StudentAbsences from '../pages/student/StudentAbsences'
 import StudentCalendar from '../pages/student/StudentCalendar'
+import StudentReports from '../pages/student/StudentReports'
 
 function RootRedirect() {
   const { role, isAuthenticated, isBootstrapped, user } = useAuth()
@@ -76,6 +80,7 @@ export function makeRouter() {
             { path: '/admin/teachers/:teacherId/class-details', element: <AdminMainTeacherClassDetails /> },
             { path: '/admin/activities', element: <AdminActivities /> },
             { path: '/admin/announcements', element: <AdminAnnouncements /> },
+            { path: '/admin/reports', element: <AdminReports /> },
           ],
         },
       ],
@@ -97,6 +102,7 @@ export function makeRouter() {
             { path: '/main-teacher/absences', element: <MainTeacherAbsences /> },
             { path: '/main-teacher/grades', element: <MainTeacherGrades /> },
             { path: '/main-teacher/calendar', element: <MainTeacherCalendar /> },
+            { path: '/main-teacher/reports', element: <MainTeacherReports /> },
           ],
         },
       ],
@@ -131,6 +137,7 @@ export function makeRouter() {
             { path: '/student/grades', element: <StudentGrades /> },
             { path: '/student/absences', element: <StudentAbsences /> },
             { path: '/student/calendar', element: <StudentCalendar /> },
+            { path: '/student/reports', element: <StudentReports /> },
           ],
         },
       ],

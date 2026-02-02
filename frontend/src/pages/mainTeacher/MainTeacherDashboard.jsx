@@ -62,6 +62,13 @@ export default function MainTeacherDashboard() {
         { title: t('mainTeacher.absencesTitle'), link: '/main-teacher/absences', icon: '◐' },
         { title: t('mainTeacher.gradesTitle'), link: '/main-teacher/grades', icon: '◗' }
       ]
+    },
+    {
+      title: t('navigation.reports'),
+      description: t('mainTeacher.reportsDescription'),
+      link: '/main-teacher/reports',
+      icon: '📋',
+      color: 'from-blue-500/10 to-blue-500/5'
     }
   ]
 

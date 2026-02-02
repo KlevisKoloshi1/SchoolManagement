@@ -73,6 +73,7 @@
     "comprehensiveTools": "Manage teachers, classes, and subjects with comprehensive administrative tools.",
     "activitiesDescription": "Create school activities and choose which classrooms see them.",
     "announcementsDescription": "Notify main teachers and students about cancelled or postponed subjects.",
+    "reportsDescription": "View student performance reports by class, semester, and academic year.",
     "confirmDeleteTeacher": "Are you sure you want to delete teacher \"{{name}}\"? This action cannot be undone."
   },
   "notifications": {
@@ -160,6 +161,7 @@
     "viewAllStudents": "View all",
     "sameInterface": "Same interface as a regular teacher (view and add records only).",
     "homeroomClass": "Your homeroom class. You can add students and manage records here.",
+    "reportsDescription": "View performance reports for students in your class by semester.",
     "noSubjectsAssigned": "No subjects assigned to you. Ask the admin to assign your subject."
   },
   "teacher": {
@@ -200,7 +202,32 @@
     "noGrades": "No grades found.",
     "readOnlyAccess": "Read-only access to your academic records and performance data.",
     "perfectAttendance": "You have a perfect attendance record!",
-    "noGradesRecorded": "No grades have been recorded yet."
+    "noGradesRecorded": "No grades have been recorded yet.",
+    "reportsTitle": "Performance Report",
+    "reportsDescription": "Your grades and absences by subject, with averages and progress."
+  },
+  "reports": {
+    "title": "Performance Reports",
+    "performanceReport": "Performance Report",
+    "selectClass": "Select class",
+    "selectStudent": "Select student",
+    "selectClassFirst": "Select a class first",
+    "selectStudentFirst": "Select a student",
+    "academicYear": "Academic year",
+    "semester": "Semester",
+    "allTime": "All time",
+    "semester1": "Semester 1 (Sep-Dec)",
+    "semester2": "Semester 2 (Jan–Mar)",
+    "semester3": "Semester 3 (Apr-Jun)",
+    "overallAverage": "Overall average",
+    "totalAbsences": "Total absences",
+    "averagePerSubject": "Average per subject",
+    "gradeProgress": "Grade progress over time",
+    "noData": "No data for the selected period.",
+    "noGradesOrAbsences": "No grades or absences recorded yet.",
+    "exportPdf": "Export PDF",
+    "loadingReport": "Loading report...",
+    "failedToLoadReport": "Failed to load report."
   },
   "subjects": {
     "Mathematics": "Mathematics",

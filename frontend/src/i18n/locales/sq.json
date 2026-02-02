@@ -73,6 +73,7 @@
     "comprehensiveTools": "Menaxho mësuesit, klasat dhe lëndët me mjete të plota administrative.",
     "activitiesDescription": "Krijo aktivitete shkolle dhe zgjidh cilat klasa i shohin.",
     "announcementsDescription": "Njofto mësuesit kryesorë dhe nxënësit për lënda të anuluara ose të shtyra.",
+    "reportsDescription": "Shiko raportet e performancës së nxënësve sipas klasës, semestrit dhe vitit shkollor.",
     "confirmDeleteTeacher": "Jeni të sigurt që dëshironi të fshini mësuesin \"{{name}}\"? Ky veprim nuk mund të zhbëhet."
   },
   "notifications": {
@@ -160,6 +161,7 @@
     "viewAllStudents": "Shiko të gjithë nxënësit",
     "sameInterface": "E njëjta ndërfaqe si një mësues i rregullt (shiko dhe shto regjistra vetëm).",
     "homeroomClass": "Klasa juaj kryesore. Mund të shtoni nxënës dhe të menaxhoni regjistra këtu.",
+    "reportsDescription": "Shiko raportet e performancës për nxënësit në klasën tuaj sipas semestrit.",
     "noSubjectsAssigned": "Nuk ju është caktuar lënda. Kërkojini administratorit t'ju caktojë lëndën."
   },
   "teacher": {
@@ -200,7 +202,32 @@
     "noGrades": "Nuk u gjetën nota.",
     "readOnlyAccess": "Qasje vetëm për lexim në regjistra tuaj akademikë dhe të dhënat e performancës.",
     "perfectAttendance": "Keni një rekord të përsosur të pranisë!",
-    "noGradesRecorded": "Ende nuk janë regjistruar nota."
+    "noGradesRecorded": "Ende nuk janë regjistruar nota.",
+    "reportsTitle": "Raporti i Performancës",
+    "reportsDescription": "Notat dhe mungesat tuaja sipas lëndës, me mesatare dhe progres."
+  },
+  "reports": {
+    "title": "Raportet e Performancës",
+    "performanceReport": "Raporti i Performancës",
+    "selectClass": "Zgjidhni klasën",
+    "selectStudent": "Zgjidhni nxënësin",
+    "selectClassFirst": "Zgjidhni një klasë fillimisht",
+    "selectStudentFirst": "Zgjidhni një nxënës",
+    "academicYear": "Viti shkollor",
+    "semester": "Semestri",
+    "allTime": "E gjithë koha",
+    "semester1": "Semestri 1 (Shtator–Dhjetor)",
+    "semester2": "Semestri 2 (Janar–Mars)",
+    "semester3": "Semestri 3 (Prill–Qershor)",
+    "overallAverage": "Mesatarja e përgjithshme",
+    "totalAbsences": "Mungesat totale",
+    "averagePerSubject": "Mesatarja për lëndë",
+    "gradeProgress": "Progresi i notave në kohë",
+    "noData": "Nuk ka të dhëna për periudhën e zgjedhur.",
+    "noGradesOrAbsences": "Ende nuk janë regjistruar nota ose mungesa.",
+    "exportPdf": "Eksporto PDF",
+    "loadingReport": "Duke ngarkuar raportin...",
+    "failedToLoadReport": "Dështoi ngarkimi i raportit."
   },
   "subjects": {
     "Mathematics": "Matematikë",

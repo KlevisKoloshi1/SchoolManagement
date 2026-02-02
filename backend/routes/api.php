@@ -4,20 +4,24 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\AdminActivityController;
 use App\Http\Controllers\Admin\AdminAnnouncementController;
 use App\Http\Controllers\Admin\AdminCatalogController;
+use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminTeacherController;
 use App\Http\Controllers\Admin\AssignmentController;
 use App\Http\Controllers\MainTeacher\MainTeacherAbsenceController;
 use App\Http\Controllers\MainTeacher\MainTeacherGradeController;
 use App\Http\Controllers\MainTeacher\MainTeacherLessonTopicController;
 use App\Http\Controllers\MainTeacher\MainTeacherNotificationController;
+use App\Http\Controllers\MainTeacher\MainTeacherReportController;
 use App\Http\Controllers\MainTeacher\MainTeacherStudentController;
 use App\Http\Controllers\Student\StudentAbsenceController;
 use App\Http\Controllers\Student\StudentGradeController;
 use App\Http\Controllers\Student\StudentNotificationController;
+use App\Http\Controllers\Student\StudentReportController;
 use App\Http\Controllers\Teacher\TeacherAbsenceController;
 use App\Http\Controllers\Teacher\TeacherCatalogController;
 use App\Http\Controllers\Teacher\TeacherGradeController;
 use App\Http\Controllers\Teacher\TeacherLessonTopicController;
+use App\Http\Controllers\Teacher\TeacherReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:api')->group(function () {
@@ -32,6 +36,7 @@ Route::middleware('throttle:api')->group(function () {
             Route::delete('/teachers/{id}', [AdminTeacherController::class, 'destroy']);
             Route::get('/teachers/{id}/class-details', [AdminTeacherController::class, 'mainTeacherClassDetails']);
             Route::get('/classes', [AdminCatalogController::class, 'classes']);
+            Route::get('/classes/{classId}/students', [AdminCatalogController::class, 'classStudents']);
             Route::get('/subjects', [AdminCatalogController::class, 'subjects']);
             Route::post('/assign-class', [AssignmentController::class, 'assignClass']);
             Route::post('/assign-subject', [AssignmentController::class, 'assignSubject']);
@@ -43,6 +48,8 @@ Route::middleware('throttle:api')->group(function () {
             Route::post('/announcements', [AdminAnnouncementController::class, 'store']);
             Route::put('/announcements/{id}', [AdminAnnouncementController::class, 'update']);
             Route::delete('/announcements/{id}', [AdminAnnouncementController::class, 'destroy']);
+            Route::get('/performance-report', [AdminReportController::class, 'index']);
+            Route::get('/performance-report/export', [AdminReportController::class, 'export']);
         });
 
         Route::prefix('main-teacher')->middleware('role:main_teacher')->group(function () {
@@ -60,6 +67,8 @@ Route::middleware('throttle:api')->group(function () {
             Route::get('/calendar', [MainTeacherNotificationController::class, 'calendar']);
             Route::get('/database-notifications', [MainTeacherNotificationController::class, 'databaseNotifications']);
             Route::post('/database-notifications/read', [MainTeacherNotificationController::class, 'markNotificationsRead']);
+            Route::get('/performance-report', [MainTeacherReportController::class, 'index']);
+            Route::get('/performance-report/export', [MainTeacherReportController::class, 'export']);
         });
 
         Route::prefix('teacher')->middleware('role:teacher')->group(function () {
@@ -70,6 +79,8 @@ Route::middleware('throttle:api')->group(function () {
             Route::post('/lesson-topics', [TeacherLessonTopicController::class, 'store']);
             Route::post('/absences', [TeacherAbsenceController::class, 'store']);
             Route::post('/grades', [TeacherGradeController::class, 'store']);
+            Route::get('/performance-report', [TeacherReportController::class, 'index']);
+            Route::get('/performance-report/export', [TeacherReportController::class, 'export']);
         });
 
         Route::prefix('student')->middleware('role:student')->group(function () {
@@ -78,6 +89,8 @@ Route::middleware('throttle:api')->group(function () {
             Route::get('/activities', [StudentNotificationController::class, 'activities']);
             Route::get('/announcements', [StudentNotificationController::class, 'announcements']);
             Route::get('/calendar', [StudentNotificationController::class, 'calendar']);
+            Route::get('/performance-report', [StudentReportController::class, 'index']);
+            Route::get('/performance-report/export', [StudentReportController::class, 'export']);
         });
     });
 });

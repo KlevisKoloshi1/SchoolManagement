@@ -26,6 +26,13 @@ export default function AdminDashboard() {
       link: '/admin/announcements',
       icon: '◎',
       color: 'from-amber-500/10 to-amber-500/5'
+    },
+    {
+      title: t('navigation.reports'),
+      description: t('admin.reportsDescription'),
+      link: '/admin/reports',
+      icon: '📋',
+      color: 'from-blue-500/10 to-blue-500/5'
     }
   ]
 

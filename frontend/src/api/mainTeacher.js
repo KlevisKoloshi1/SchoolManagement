@@ -92,3 +92,27 @@ export async function markNotificationsRead(notificationId = null) {
   return data
 }
 
+/**
+ * Get performance report for a student.
+ * @param {{ student_id: number, year?: number, semester?: number }} params
+ */
+export async function getPerformanceReport({ student_id, year, semester }) {
+  const params = { student_id }
+  if (year != null) params.year = year
+  if (semester != null) params.semester = semester
+  const { data } = await apiClient.get('/main-teacher/performance-report', { params })
+  return data
+}/**
+ * Export performance report as PDF (returns blob for download/open).
+ * @param {{ student_id: number, year?: number, semester?: number }} params
+ */
+export async function exportPerformanceReportPdf({ student_id, year, semester }) {
+  const query = { student_id }
+  if (year != null) query.year = year
+  if (semester != null) query.semester = semester
+  const { data } = await apiClient.get('/main-teacher/performance-report/export', {
+    params: query,
+    responseType: 'blob',
+  })
+  return data
+}

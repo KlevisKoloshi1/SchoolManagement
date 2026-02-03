@@ -6,10 +6,12 @@ export async function getTeachers() {
 }
 
 /**
- * @param {{ available_for_main_teacher?: boolean }} [params] - If true, returns only classes without a main teacher (for add main teacher form).
+ * @param {{ available_for_main_teacher?: boolean }} [params]
  */
 export async function getClasses(params) {
-  const { data } = await apiClient.get('/admin/classes', { params: params ?? {} })
+  const { data } = await apiClient.get('/admin/classes', {
+    params: params ?? {},
+  })
   return data
 }
 
@@ -19,18 +21,29 @@ export async function getSubjects() {
 }
 
 export async function getMainTeacherClassDetails(teacherId) {
-  const { data } = await apiClient.get(`/admin/teachers/${teacherId}/class-details`)
+  const { data } = await apiClient.get(
+    `/admin/teachers/${teacherId}/class-details`
+  )
   return data
 }
 
-export async function createTeacher({ name, email, is_main_teacher, class_id, subject_id, subject_ids }) {
+export async function createTeacher({
+  name,
+  email,
+  is_main_teacher,
+  class_id,
+  subject_ids,
+}) {
   const body = { name, email, is_main_teacher }
-  if (is_main_teacher) {
-    body.class_id = class_id
-    body.subject_id = subject_id
-  } else if (subject_ids?.length) {
+
+  if (subject_ids?.length) {
     body.subject_ids = subject_ids
   }
+
+  if (is_main_teacher) {
+    body.class_id = class_id
+  }
+
   const { data } = await apiClient.post('/admin/teachers', body)
   return data
 }
@@ -61,24 +74,33 @@ export async function getActivities() {
   return data
 }
 
-export async function createActivity({ name, date, description, for_all_classes, class_ids }) {
+export async function createActivity({
+  name,
+  date,
+  description,
+  for_all_classes,
+  class_ids,
+}) {
   const { data } = await apiClient.post('/admin/activities', {
     name,
     date,
     description: description || null,
     for_all_classes: !!for_all_classes,
-    class_ids: for_all_classes ? [] : (class_ids || []),
+    class_ids: for_all_classes ? [] : class_ids || [],
   })
   return data
 }
 
-export async function updateActivity(id, { name, date, description, for_all_classes, class_ids }) {
+export async function updateActivity(
+  id,
+  { name, date, description, for_all_classes, class_ids }
+) {
   const { data } = await apiClient.put(`/admin/activities/${id}`, {
     name,
     date,
     description: description || null,
     for_all_classes: !!for_all_classes,
-    class_ids: for_all_classes ? [] : (class_ids || []),
+    class_ids: for_all_classes ? [] : class_ids || [],
   })
   return data
 }
@@ -93,26 +115,36 @@ export async function getAnnouncements() {
   return data
 }
 
-export async function createAnnouncement({ type, title, message, subject_id, for_all_classes, class_ids }) {
+export async function createAnnouncement({
+  type,
+  title,
+  message,
+  subject_id,
+  for_all_classes,
+  class_ids,
+}) {
   const { data } = await apiClient.post('/admin/announcements', {
     type,
     title,
     message,
     subject_id: subject_id || null,
     for_all_classes: !!for_all_classes,
-    class_ids: for_all_classes ? [] : (class_ids || []),
+    class_ids: for_all_classes ? [] : class_ids || [],
   })
   return data
 }
 
-export async function updateAnnouncement(id, { type, title, message, subject_id, for_all_classes, class_ids }) {
+export async function updateAnnouncement(
+  id,
+  { type, title, message, subject_id, for_all_classes, class_ids }
+) {
   const { data } = await apiClient.put(`/admin/announcements/${id}`, {
     type,
     title,
     message,
     subject_id: subject_id || null,
     for_all_classes: !!for_all_classes,
-    class_ids: for_all_classes ? [] : (class_ids || []),
+    class_ids: for_all_classes ? [] : class_ids || [],
   })
   return data
 }
@@ -127,7 +159,9 @@ export async function deleteAnnouncement(id) {
  * @param {number} classId
  */
 export async function getClassStudents(classId) {
-  const { data } = await apiClient.get(`/admin/classes/${classId}/students`)
+  const { data } = await apiClient.get(
+    `/admin/classes/${classId}/students`
+  )
   return data
 }
 
@@ -139,19 +173,29 @@ export async function getPerformanceReport({ student_id, year, semester }) {
   const params = { student_id }
   if (year != null) params.year = year
   if (semester != null) params.semester = semester
+
   const { data } = await apiClient.get('/admin/performance-report', { params })
   return data
-}/**
- * Export performance report as PDF (returns blob for download/open).
- * @param {{ student_id: number, year?: number, semester?: number }} params
+}
+
+/**
+ * Export performance report as PDF (returns blob).
  */
-export async function exportPerformanceReportPdf({ student_id, year, semester }) {
+export async function exportPerformanceReportPdf({
+  student_id,
+  year,
+  semester,
+}) {
   const query = { student_id }
   if (year != null) query.year = year
   if (semester != null) query.semester = semester
-  const { data } = await apiClient.get('/admin/performance-report/export', {
-    params: query,
-    responseType: 'blob',
-  })
+
+  const { data } = await apiClient.get(
+    '/admin/performance-report/export',
+    {
+      params: query,
+      responseType: 'blob',
+    }
+  )
   return data
 }
